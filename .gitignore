@@ -1,0 +1,74 @@
+# --- 通用开发环境文件 ---
+# IDE配置
+.idea/
+.vscode/
+*.sublime-workspace
+*.uvprojx
+*.uvoptx
+
+# 编辑器临时文件
+*.swp
+*.swo
+*~
+*.bak
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# --- 构建系统相关 ---
+# CMake构建目录
+/cmake-build-*/
+/cmake-build/
+/build/
+Debug/
+Release/
+[Oo]bj/
+[Bb]in/
+
+# CMake生成文件
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+/.cmake/
+
+# 编译中间文件
+*.o
+*.d
+*.su
+*.lst
+*.log
+*.map
+*.elf
+*.hex
+*.bin
+
+# --- 嵌入式特定 ---
+# STM32CubeMX生成文件（保留.ioc但忽略自动生成代码）
+!/*.ioc
+/MXGeneratedCode/
+
+# OpenOCD/JLink
+*.jlink
+*.openocd
+
+# --- 测试与调试 ---
+Testing/
+[Tt]emp/
+*.jdebug
+*.jdebug.user
+
+# --- 项目特定目录 ---
+# CLion构建目录（根据项目结构显式排除）
+/cmake-build-debug/
+
+# 二进制/库文件
+*.lib
+*.so
+*.dll
+*.exe
+
+# --- 包管理 ---
+# Conan
+.conan/
