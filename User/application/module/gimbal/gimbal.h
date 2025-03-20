@@ -11,6 +11,9 @@
 #include "pid.h"
 #include "imu.h"
 
+//这个参数用来更改摇杆打上时是自瞄还是小陀螺 1-自瞄，0-小陀螺
+#define SET_AUTO_OR_GYRO    0
+
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
 #define PITCH_SPEED_PID_KP        2000.0f//1500
 #define PITCH_SPEED_PID_KI        0.0f//5

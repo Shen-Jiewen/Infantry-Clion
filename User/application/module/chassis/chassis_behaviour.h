@@ -12,8 +12,11 @@
 #include "gimbal_behaviour.h"
 #include "dt7.h"
 #include "user_lib.h"
+#include "gimbal.h"
+#include "referee.h"
 
 #define CHASSIS_OPEN_RC_SCALE 10		  // 在  CHASSIS_OPEN 模式下,遥控器乘以该比例发送到can上
+#define CHASSIS_GYRO_WZ_SPEED 3.5f        //设置固定小陀螺底盘转速
 
 typedef enum {
 	CHASSIS_ZERO_FORCE,                   // 底盘无力，类似没上电

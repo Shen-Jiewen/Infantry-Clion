@@ -142,7 +142,8 @@ typedef struct {
 	uint8_t gyroscape_flag;		//小陀螺开启标志位
 	uint8_t high_speed_flag;	//提速标志位
 	uint8_t auto_flag;			//自瞄标志位
-
+    uint8_t auto_gyro_select;   //自瞄小陀螺选择
+    uint8_t gyro_flag;          //小陀螺标志位
 	// 通信接口定义
 	void (*CAN_cmd_chassis)(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 } chassis_control_t;
