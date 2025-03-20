@@ -53,9 +53,11 @@ static void handle_gimbal_switch_control(gimbal_control_t *gimbal_mode_set);
 
 static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
+static void gimbal_autoangel_control(fp32 *add_yaw, fp32 *add_pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
 
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
@@ -113,14 +115,8 @@ void gimbal_behaviour_set(gimbal_control_t *gimbal_mode_set)
 		handle_initialization_mode(gimbal_mode_set);
 	}
 
-	// 云台开关控制状态
+	// 云台开关控制状态,设置云台模式
 	handle_gimbal_switch_control(gimbal_mode_set);
-
-	// 错误处理，若遇到系统错误，切换到无力模式
-	if (toe_is_error(DBUS_TOE))
-	{
-		gimbal_behaviour = GIMBAL_ZERO_FORCE;
-	}
 
 	// 如果当前状态为无力模式，且下一状态不是无力模式，则进入初始化状态
 	if (last_gimbal_behaviour == GIMBAL_ZERO_FORCE && gimbal_behaviour != GIMBAL_ZERO_FORCE)
@@ -195,7 +191,11 @@ static void handle_initialization_mode(gimbal_control_t *gimbal_mode_set)
 	if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME &&
 		!switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE))
 	{
-	}
+        return;
+	}else{
+        init_stop_time = 0;
+        init_time = 0;
+    }
 }
 
 /**
@@ -210,18 +210,29 @@ static void handle_gimbal_switch_control(gimbal_control_t *gimbal_mode_set)
 	{
 		gimbal_behaviour = GIMBAL_ZERO_FORCE;
 	}
-
 	// 遥控器右拨杆拨到中间，云台进入跟随模式
 	else if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
 	{
-		// 默认是绝对角度控制
-		gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
-		// 在跟随模式下按下鼠标右键时，切换到自瞄模式
-		if (gimbal_mode_set->gimbal_rc_ctrl->mouse.press_r)
-		{
-			gimbal_behaviour = GIMBAL_AUTO;
-		}
+        //鼠标右键开启自瞄,没有右键则绝对角度控制
+        if( gimbal_mode_set->gimbal_rc_ctrl->mouse.press_r)
+        {
+            gimbal_behaviour = GIMBAL_AUTO;
+        }
+        else
+        {
+            gimbal_behaviour = GIMBAL_ABSOLUTE_ANGLE;
+        }
 	}
+    //遥控器打在上并且自瞄，小陀螺选择为自瞄则为自瞄模式
+    else if(switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL])&&gimbal_mode_set->auto_gyro_select)
+    {
+        gimbal_behaviour = GIMBAL_AUTO;
+    }
+    //遥控器错误则无力，防止疯车
+    if( toe_is_error(DBUS_TOE))
+    {
+        gimbal_behaviour = GIMBAL_ZERO_FORCE;
+    }
 }
 
 /**
@@ -247,6 +258,10 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 	{
 		gimbal_init_control(add_yaw, add_pitch, gimbal_control_set);
 	}
+    else if (gimbal_behaviour == GIMBAL_CALI)
+    {
+        gimbal_cali_control(add_yaw, add_pitch, gimbal_control_set);
+    }
 	else if (gimbal_behaviour == GIMBAL_ABSOLUTE_ANGLE)
 	{
 		gimbal_absolute_angle_control(add_yaw, add_pitch, gimbal_control_set);
@@ -261,10 +276,9 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 	}
 	else if (gimbal_behaviour == GIMBAL_AUTO)
 	{
-		// gimbal_autoangel_control(add_yaw, add_pitch, gimbal_control_set);
+		gimbal_autoangel_control(add_yaw, add_pitch, gimbal_control_set);
 	}
 }
-
 
 /**
   * @brief          当云台行为模式是GIMBAL_ZERO_FORCE, 这个函数会被调用,云台控制模式是raw模式.原始模式意味着
@@ -300,6 +314,63 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
 	{
 		*pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
 		*yaw = (INIT_YAW_SET - gimbal_control_set->gimbal_yaw_motor.relative_angle) * GIMBAL_INIT_YAW_SPEED;
+	}
+}
+
+/**
+  * @brief          云台校准控制，电机是raw控制，云台先抬起pitch，放下pitch，在正转yaw，最后反转yaw，记录当时的角度和编码值
+  * @author         RM
+  * @param[out]     yaw:发送yaw电机的原始值，会直接通过can 发送到电机
+  * @param[out]     pitch:发送pitch电机的原始值，会直接通过can 发送到电机
+  * @param[in]      gimbal_control_set:云台数据指针
+  * @retval         none
+  */
+static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
+{
+	static uint32_t cali_time = 0;
+
+	if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MAX_STEP)
+	{
+
+		*pitch = GIMBAL_CALI_MOTOR_SET;
+		*yaw = 0;
+
+		//判断陀螺仪数据， 并记录最大最小角度数据
+		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_pitch,
+			gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_pitch_ecd,
+			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_pitch_motor), gimbal_control_set->gimbal_cali.step)
+	}
+	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MIN_STEP)
+	{
+		*pitch = -GIMBAL_CALI_MOTOR_SET;
+		*yaw = 0;
+
+		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_pitch,
+			gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_pitch_ecd,
+			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_pitch_motor), gimbal_control_set->gimbal_cali.step)
+	}
+	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MAX_STEP)
+	{
+		*pitch = 0;
+		*yaw = GIMBAL_CALI_MOTOR_SET;
+
+		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_yaw,
+			gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_yaw_ecd,
+			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_yaw_motor), gimbal_control_set->gimbal_cali.step)
+	}
+
+	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MIN_STEP)
+	{
+		*pitch = 0;
+		*yaw = -GIMBAL_CALI_MOTOR_SET;
+
+		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_yaw,
+			gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_yaw_ecd,
+			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_yaw_motor), gimbal_control_set->gimbal_cali.step)
+	}
+	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_END_STEP)
+	{
+		cali_time = 0;
 	}
 }
 
@@ -352,6 +423,23 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, __attribute__((unu
 	*yaw = 0.0f;
 	*pitch = 0.0f;
 }
+
+/**
+  * @brief          云台自动角度控制，目标值是自瞄弹道解算计算出来的
+  * @author         RM
+  * @param[in]      add_yaw: yaw轴角度控制，为角度的增量 单位 rad
+  * @param[in]      add_pitch: pitch轴角度控制，为角度的增量 单位 rad
+  * @param[in]      gimbal_control_set:云台数据指针
+  * @retval         none
+  */
+static void gimbal_autoangel_control(fp32 *add_yaw, fp32 *add_pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set)
+{
+    if (add_yaw == NULL || add_pitch == NULL || gimbal_control_set == NULL){
+        return;
+    }
+//    Auto_Track(gimbal_control_set);    //自瞄未移植，暂时注释,这个函数设置了了云台电机目标值
+}
+
 
 /**
  * @brief          返回云台状态机指针，目前用于发射机构判断是否自瞄以及是否无力

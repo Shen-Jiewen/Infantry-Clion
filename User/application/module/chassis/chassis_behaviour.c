@@ -73,6 +73,7 @@ static void chassis_open_set_control(fp32* vx_set,
 
 static chassis_behaviour_e chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
 static chassis_behaviour_e last_chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
+extern ext_game_robot_state_t robot_state;									//比赛机器人状态
 
 /**
   * @brief          根据遥控器控制信号设置底盘行为模式
@@ -91,51 +92,73 @@ void chassis_behaviour_mode_set(chassis_control_t* chassis_move_mode)
 		return; // 如果指针为空，返回不做任何操作
 	}
 
-	// 根据遥控器模式开关设定底盘行为模式
+	// 根据遥控器模式开关设定底盘行为模式，遥控值通道0打上
 	if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
 	{
-		// 如果开关向上，设置为不跟随角度模式
-		chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;
+        if(chassis_move_mode->auto_gyro_select)
+        {
+            chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;     //自瞄
+        }else
+        {
+            chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;	              //小陀螺
+        }
 	}
-	else if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
+	else if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL])) //遥控值通道0打下
 	{
-		// 如果开关向下，设置为不移动模式
-		chassis_behaviour_mode = CHASSIS_NO_MOVE;
+		// 如果开关向下，设置为无力，直接开环设置电流为，而不是闭环不动
+		chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
+        //清空标志位
+        chassis_move_mode->gyro_flag = 0;
+        chassis_move_mode->auto_flag = 0;
 	}
-	else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
+	else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL])) //遥控值通道0打中，可以键盘控制
 	{
-		chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
-		// 如果开关处于中间，检查是否按下Shift键来切换模式
-//		if ((chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_SHIFT)
-//			&& last_chassis_behaviour_mode == CHASSIS_FOLLOW_GIMBAL_YAW)
-//		{
-//			// 如果当前模式是步兵跟随云台模式，按下Shift后切换到陀螺模式
-//			chassis_behaviour_mode = CHASSIS_GYRO_MODE;
-//		}
-//		else if ((chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_SHIFT)
-//			&& last_chassis_behaviour_mode == CHASSIS_GYRO_MODE)
-//		{
-//			// 如果当前模式是陀螺模式，按下Shift后切换到步兵跟随云台模式
-//			chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
-//		}
+        //判断键盘按下来置位小陀螺标志位
+        if((chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_SHIFT)&& !chassis_move_mode->gyro_flag)
+        {
+            chassis_move_mode->gyro_flag = 1;//小陀螺标志位
+        }
+        else if((chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_CTRL) && chassis_move_mode->gyro_flag)
+        {
+            chassis_move_mode->gyro_flag = 0;
+        }
+        //通过鼠标开启自瞄
+        if(chassis_move_mode->chassis_RC->mouse.press_r )
+        {
+            chassis_move_mode->auto_flag = 1;    //自瞄标志位
+        }
+        else if(! chassis_move_mode->chassis_RC->mouse.press_r )
+        {
+            chassis_move_mode->auto_flag = 0;
+        }
+        //血量为零-阵亡清空标志位，防止复活疯车，因为C板有NUC虚拟串口不会断电
+        if(robot_state.remain_HP == 0)    //阵亡清空标志位，防止复活后状态混乱
+        {
+            chassis_move_mode->gyro_flag = 0;
+            chassis_move_mode->auto_flag = 0;
+        }
+        if(chassis_move_mode->gyro_flag){
+            chassis_behaviour_mode = CHASSIS_NO_FOLLOW_YAW;
+        }
+        else{
+            chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
+        }
 	}
 
-	// 当云台处于某个模式时，底盘不执行移动控制
-	// 此处可以添加具体的云台模式判断，进行底盘停滞或不操作的处理
+	// 当云台处于某些模式时，底盘不移动
 	if (gimbal_cmd_to_chassis_stop()) {
-		chassis_behaviour_mode = CHASSIS_NO_MOVE;
+		chassis_behaviour_mode = CHASSIS_ZERO_FORCE;   //某些模式下底盘无力，如初始化，校准等
 	}
-
 	// 更新上一次的底盘行为模式
 	last_chassis_behaviour_mode = chassis_behaviour_mode;
 
 	// 根据当前的底盘行为模式设置底盘控制模式
-	if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE || chassis_behaviour_mode == CHASSIS_OPEN)
+	if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE)
 	{
-		// 零力矩模式，底盘处于原始控制模式 | 开环控制模式，底盘按照原始控制信号进行控制
+		// 零力矩模式，底盘处于原始控制模式，底盘按照原始控制信号进行控制
 		chassis_move_mode->chassis_mode = CHASSIS_VECTOR_RAW;
 	}
-	else if (chassis_behaviour_mode == CHASSIS_NO_MOVE || chassis_behaviour_mode == CHASSIS_GYRO_MODE)
+	else if (chassis_behaviour_mode == CHASSIS_NO_FOLLOW_YAW)
 	{
 		// 底盘不移动模式，底盘锁死不允许移动 | 小陀螺模式，底盘旋转不跟随云台
 		chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
@@ -163,10 +186,6 @@ void chassis_behaviour_control_set(fp32* vx_set,
 	{
 		chassis_zero_force_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
 	}
-	else if (chassis_behaviour_mode == CHASSIS_NO_MOVE)
-	{
-		chassis_no_move_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
-	}
 	else if (chassis_behaviour_mode == CHASSIS_FOLLOW_GIMBAL_YAW)
 	{
 		chassis_follow_gimbal_yaw_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
@@ -174,10 +193,6 @@ void chassis_behaviour_control_set(fp32* vx_set,
 	else if (chassis_behaviour_mode == CHASSIS_NO_FOLLOW_YAW)
 	{
 		chassis_no_follow_yaw_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
-	}
-	else if (chassis_behaviour_mode == CHASSIS_OPEN)
-	{
-		chassis_open_set_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
 	}
 }
 
@@ -237,7 +252,6 @@ static void chassis_follow_gimbal_yaw_control(fp32* vx_set,
 {
 	// 获取底盘的纵向和横向速度
 	chassis_rc_to_control_vector(vx_set, vy_set, chassis_move_rc_to_vector);
-
 	// 与云台的相对角度设置为0
 	*angle_set = 0.0f;
 }
@@ -259,8 +273,14 @@ static void chassis_no_follow_yaw_control(fp32* vx_set,
 	// 计算纵向和横向速度
 	chassis_rc_to_control_vector(vx_set, vy_set, chassis_move_rc_to_vector);
 
-	// 设置固定的旋转速度，逆时针旋转为正，顺时针旋转为负
-	*wz_set = -CHASSIS_WZ_RC_SEN * 660; // 设置最大旋转速度为660，参数与控制器输入相关
+	// 设置固定的旋转速度，逆时针旋转为正，顺时针旋转为负，为了方便对抗赛过检录设置正反小陀螺
+    if(switch_is_mid(chassis_move_rc_to_vector->chassis_RC->rc.s[GIMBAL_MODE_CHANNEL]))
+    {
+        *wz_set = CHASSIS_GYRO_WZ_SPEED;
+    }else if(switch_is_down(chassis_move_rc_to_vector->chassis_RC->rc.s[GIMBAL_MODE_CHANNEL]))
+    {
+        *wz_set = -CHASSIS_GYRO_WZ_SPEED;
+    }
 }
 /**
   * @brief          底盘开环的行为状态机下，底盘模式是raw原生状态，故而设定值会直接发送到can总线上

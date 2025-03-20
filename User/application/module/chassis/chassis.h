@@ -67,10 +67,10 @@
 //底盘摇摆按键
 #define SWING_KEY KEY_PRESSED_OFFSET_CTRL
 //底盘前后左右控制按键
-#define CHASSIS_FRONT_KEY KEY_PRESSED_OFFSET_W
-#define CHASSIS_BACK_KEY KEY_PRESSED_OFFSET_S
-#define CHASSIS_LEFT_KEY KEY_PRESSED_OFFSET_A
-#define CHASSIS_RIGHT_KEY KEY_PRESSED_OFFSET_D
+#define CHASSIS_FRONT_KEY   KEY_PRESSED_OFFSET_W
+#define CHASSIS_BACK_KEY    KEY_PRESSED_OFFSET_S
+#define CHASSIS_LEFT_KEY    KEY_PRESSED_OFFSET_A
+#define CHASSIS_RIGHT_KEY   KEY_PRESSED_OFFSET_D
 
 //m3508转化成底盘速度(m/s)的比例，
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f
@@ -80,7 +80,6 @@
 #define MAX_WHEEL_SPEED 4.0f
 //底盘运动过程最大前进速度
 #define NORMAL_MAX_CHASSIS_SPEED_X 3.0f
-
 //底盘运动过程最大平移速度
 #define NORMAL_MAX_CHASSIS_SPEED_Y 1.8f
 
@@ -141,7 +140,8 @@ typedef struct {
 
 	uint8_t gyroscape_flag;		//小陀螺开启标志位
 	uint8_t auto_flag;			//自瞄标志位
-
+    uint8_t auto_gyro_select;   //自瞄小陀螺选择
+    uint8_t gyro_flag;          //小陀螺标志位
 	// 通信接口定义
 	void (*CAN_cmd_chassis)(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 } chassis_control_t;
