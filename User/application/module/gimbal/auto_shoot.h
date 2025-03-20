@@ -1,22 +1,22 @@
-//
-// Created by Rick on 2025/3/20.
-// 优化重构版本
-//
-
 #ifndef AUTO_SHOOT_H
 #define AUTO_SHOOT_H
 
 #include "main.h"
 #include "fifo.h"
 #include "struct_typedef.h"
-#include "imu.h"
+
 
 // 常量定义
-#define AUTO_SHOOT_FIFO_BUF_LENGTH 1024  // 最大接收的数据长度
-#define CRC_INIT_AUTO              0xffff  // CRC校验初始值
-#define HEADER_SOF                 0xA5    // 帧头标识
+#define AUTO_SHOOT_FIFO_BUF_LENGTH 1024    // 最大接收的数据长度
+#define CRC_INIT_AUTO              0xFFFF  // CRC校验初始值
+#define AUTO_SHOOT_HEADER_SOF      0x5A    // 帧头标识
 #define ARMOR_YAW_LIMIT            0.6f    // 装甲板偏航角限制
 #define ARMOR_YAW_LIMIT_OFFSET     0.22f   // 装甲板偏航角限制偏移量
+#define BULLET_SPEED               23.5f   // 弹丸初速度
+#define TRIGGER_DELAY              100.f   // 发弹延迟时间
+#define BULLET_FORWARD_DISTANCE    0.0f    // 枪口前推距离
+#define CAMERA_TO_YAW_AXIS_HEIGHT  0.0f    // 相机距离转轴高度
+
 
 // 装甲板ID枚举
 typedef enum {
@@ -75,6 +75,9 @@ typedef struct {
     float bias_time; // 偏置时间
     float s_bias; // 枪口前推的距离
     float z_bias; // yaw轴电机到枪口水平面的垂直距离
+
+    // 开火控制
+    uint8_t fire_step;
 
     armor_id_e armor_id; // 装甲板类型
     armor_num_e armor_num; // 装甲板数量

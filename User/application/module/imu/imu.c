@@ -195,7 +195,7 @@ static void gyro_int_callback(void) {
  * 4. 中断引脚的中断号需要与硬件设计一致，确保中断能够正确触发。
  * 5. 回调函数需要在调用该函数之前定义，并在初始化时注册。
  *
- * @param 无
+ * @param
  * @return 无
  */
 void imu_gpio_init(void) {
@@ -240,7 +240,7 @@ void imu_gpio_init(void) {
  * 4. 初始化时占空比设置为0，表示PWM输出初始为低电平。
  * 5. 初始化完成后，调用BSP_PWM_Start函数启动PWM输出。
  *
- * @param 无
+ * @param
  * @return 无
  */
 void imu_pwm_init(void) {

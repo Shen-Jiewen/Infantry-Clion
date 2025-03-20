@@ -143,7 +143,7 @@ osThreadId_t autoShootHandle;
 const osThreadAttr_t autoShoot_attributes = {
   .name = "autoShoot",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for imuBinarySem01 */
 osSemaphoreId_t imuBinarySem01Handle;
