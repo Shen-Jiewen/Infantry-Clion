@@ -320,9 +320,8 @@ void auto_shoot_solve_trajectory(solver_track_t *solver_track, send_packed_t *se
         }
     }
 
-    // 将计算结果存储到send_packed结构体中
-    send_packed->pitch = pitch;
-    send_packed->yaw = yaw;
+    solver_track->target_pitch = pitch;
+    solver_track->tar_yaw = yaw;
     send_packed->aim_x = aim_x;
     send_packed->aim_y = aim_y;
     send_packed->aim_z = aim_z;

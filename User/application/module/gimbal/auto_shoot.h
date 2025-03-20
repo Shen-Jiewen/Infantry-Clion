@@ -56,6 +56,10 @@ typedef struct {
     float current_pitch; // 当前俯仰角
     float current_yaw; // 当前偏航角
 
+    // 解算之后的参数
+    float target_pitch;
+    float target_yaw;
+
     // 目标参数
     float xw; // 世界坐标系下的x坐标
     float yw; // 世界坐标系下的y坐标

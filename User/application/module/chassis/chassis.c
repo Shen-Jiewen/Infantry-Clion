@@ -278,8 +278,6 @@ void chassis_init(chassis_control_t* chassis_move_init)
 	chassis_move_init->vy_max_speed = NORMAL_MAX_CHASSIS_SPEED_Y;
 	chassis_move_init->vy_min_speed = -NORMAL_MAX_CHASSIS_SPEED_Y;
 
-    //选择自瞄和小陀螺 1:自瞄   0：小陀螺
-    chassis_move_init->auto_gyro_select = SET_AUTO_OR_GYRO;
     //小陀螺标志位
     chassis_move_init->gyro_flag = 0;
 	//更新一下数据
