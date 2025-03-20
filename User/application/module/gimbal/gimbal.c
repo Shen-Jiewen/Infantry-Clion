@@ -123,10 +123,8 @@ void gimbal_init(gimbal_control_t* init)
 	init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
 	init->gimbal_pitch_motor.relative_angle_set = init->gimbal_pitch_motor.relative_angle;
 	init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
-
-    //初始化自瞄小陀螺选择
-    init->auto_gyro_select = SET_AUTO_OR_GYRO;
 }
+
 
 /**
   * @brief          更新底盘测量数据，包括电机速度、欧拉角度和机器人速度。

@@ -224,7 +224,7 @@ static void handle_gimbal_switch_control(gimbal_control_t *gimbal_mode_set)
         }
 	}
     //遥控器打在上并且自瞄，小陀螺选择为自瞄则为自瞄模式
-    else if(switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL])&&gimbal_mode_set->auto_gyro_select)
+    else if(switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
         gimbal_behaviour = GIMBAL_AUTO;
     }
