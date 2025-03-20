@@ -97,7 +97,7 @@
 #define INIT_PITCH_SET  0.0f
 
 //云台校准中值的时候，发送原始电流值，以及堵转时间，通过陀螺仪判断堵转
-#define GIMBAL_CALI_MOTOR_SET   20000
+#define GIMBAL_CALI_MOTOR_SET   12000
 #define GIMBAL_CALI_STEP_TIME   2000
 #define GIMBAL_CALI_GYRO_LIMIT  0.1f
 
@@ -195,7 +195,7 @@ typedef struct
 	gimbal_motor_t gimbal_yaw_motor;        // 控制云台偏航电机的数据和控制变量的结构体。
 	gimbal_motor_t gimbal_pitch_motor;      // 控制云台俯仰电机的数据和控制变量的结构体。
 	gimbal_step_cali_t gimbal_cali;         // 云台步进位置的校准数据。
-
+    uint8_t auto_gyro_select;               //自瞄小陀螺选择
 	// 通信接口定义
 	void (* CAN_cmd_gimbal)(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 } gimbal_control_t;
