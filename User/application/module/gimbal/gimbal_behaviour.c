@@ -196,7 +196,6 @@ static void handle_initialization_mode(gimbal_control_t *gimbal_mode_set)
 	if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME &&
 		!switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE))
 	{
-		return;
 	}
 }
 
@@ -249,10 +248,6 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 	{
 		gimbal_init_control(add_yaw, add_pitch, gimbal_control_set);
 	}
-	else if (gimbal_behaviour == GIMBAL_CALI)
-	{
-		gimbal_cali_control(add_yaw, add_pitch, gimbal_control_set);
-	}
 	else if (gimbal_behaviour == GIMBAL_ABSOLUTE_ANGLE)
 	{
 		gimbal_absolute_angle_control(add_yaw, add_pitch, gimbal_control_set);
@@ -286,7 +281,7 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, __attribute__((unu
 }
 
 /**
-  * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴
+  * @brief          云台初始化控制，Pitch电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴
   * @author         RM
   * @param[out]     yaw:角度的增量 单位 rad
   * @param[out]     pitch:角度的增量 单位 rad
@@ -381,7 +376,6 @@ static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
 
 	*yaw = (fp32)yaw_channel * YAW_RC_SEN - (fp32)gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
 	*pitch = (fp32)pitch_channel * PITCH_RC_SEN + (fp32)gimbal_control_set->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN;
-
 }
 
 /**
