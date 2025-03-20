@@ -160,7 +160,7 @@ void gimbal_feedback_update(gimbal_control_t* feedback_update)
 		feedback_update->gimbal_pitch_motor.offset_ecd);
 #else
 	// 否则使用正值计算相对角度
-	feedback_update->gimbal_pitch_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.motor_measure.motor_6020->ecd,
+	feedback_update->gimbal_pitch_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.motor_6020->ecd,
 		feedback_update->gimbal_pitch_motor.offset_ecd);
 #endif
 
@@ -175,7 +175,7 @@ void gimbal_feedback_update(gimbal_control_t* feedback_update)
 		feedback_update->gimbal_yaw_motor.offset_ecd);
 #else
 	// 否则使用正值计算相对角度
-		feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.motor_measure.motor_6020->ecd,
+		feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.motor_6020->ecd,
 		feedback_update->gimbal_yaw_motor.offset_ecd);
 #endif
 
@@ -219,6 +219,7 @@ void gimbal_set_mode(gimbal_control_t* set_mode)
 	{
 		return;
 	}
+    //函数定义在behaviour.c文件中
 	gimbal_behaviour_mode_set(set_mode);
 }
 
@@ -502,7 +503,6 @@ fp32 get_gimbal_motor_ecd(const gimbal_motor_t* motor)
 	{
 		return 0;
 	}
-
 	return motor->motor_6020->ecd;
 }
 
