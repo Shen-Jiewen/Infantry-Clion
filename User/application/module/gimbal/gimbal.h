@@ -7,7 +7,6 @@
 
 #include "struct_typedef.h"
 #include "dji_6020.h"
-#include "dm_4310_v41.h"
 #include "dt7.h"
 #include "pid.h"
 #include "imu.h"
@@ -153,12 +152,7 @@ typedef enum
  */
 typedef struct
 {
-	motor_type_e motor_type;                                // 电机类型
-	union
-	{
-		const motor_6020_measure_t* motor_6020;            // 指向6020电机测量数据的常量指针
-		const motor_4310_v41_measure_t* motor_4310;        // 指向4310电机测量数据的常量指针
-	} motor_measure;
+	const motor_6020_measure_t* motor_6020;            // 指向6020电机测量数据的常量指针
 
 	pid_type_def gimbal_motor_absolute_angle_pid;      // 绝对角度PID控制器
 	pid_type_def gimbal_motor_relative_angle_pid;      // 相对角度PID控制器

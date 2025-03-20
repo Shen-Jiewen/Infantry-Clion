@@ -35,20 +35,26 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
+_estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
+/* Start user variables */
+
+/* End user variables */
 
 /* Specify the memory areas */
 MEMORY
 {
-  ITCMRAM (xrw)    : ORIGIN = 0x00000000,   LENGTH = 64K
-  DTCMRAM (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
-  FLASH    (rx)    : ORIGIN = 0x08000000,   LENGTH = 1024K
-  RAM_D1  (xrw)    : ORIGIN = 0x24000000,   LENGTH = 320K
-  RAM_D2  (xrw)    : ORIGIN = 0x30000000,   LENGTH = 32K
-  RAM_D3  (xrw)    : ORIGIN = 0x38000000,   LENGTH = 16K
+/* Start MX regions */
+  DTCMRAM	(xrw)	: ORIGIN = 0x20000000, LENGTH = 128K
+  FLASH	(rx)	: ORIGIN = 0x08000000, LENGTH = 1024K
+  RAM_D3	(xrw)	: ORIGIN = 0x38000000, LENGTH = 16K
+  ITCMRAM	(xrw)	: ORIGIN = 0x00000000, LENGTH = 64K
+  RAM_D2	(xrw)	: ORIGIN = 0x30000000, LENGTH = 32K
+  RAM	(xrw)	: ORIGIN = 0x24000000, LENGTH = 128K
+/* End MX regions */
+/*removed by MX default:   RAM_D1	(xrw)	: ORIGIN = 0x24000000, LENGTH = 320K */
 }
 
 /* Define output sections */
@@ -137,7 +143,7 @@ SECTIONS
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
-  } >RAM_D1 AT> FLASH
+  } >RAM AT> FLASH
 
   /* Uninitialized data section */
   . = ALIGN(4);
@@ -153,7 +159,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
-  } >RAM_D1
+  } >RAM
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
@@ -164,7 +170,7 @@ SECTIONS
     . = . + _Min_Heap_Size;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
-  } >RAM_D1
+  } >RAM
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
@@ -175,4 +181,37 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+
+ /*  Unitialized DTCMRAM section into "DTCMRAM" DTCMRAM type memory [MMT section] */
+ .DTCMRAM_Section :
+  {
+    . = ALIGN(4);
+    KEEP (*(.DTCMRAM_Section))
+    . = ALIGN(4);
+  } >DTCMRAM
+
+ /*  Unitialized RAM_D3 section into "RAM_D3" RAM_D3 type memory [MMT section] */
+ .RAM_D3_Section :
+  {
+    . = ALIGN(4);
+    KEEP (*(.RAM_D3_Section))
+    . = ALIGN(4);
+  } >RAM_D3
+
+ /*  Unitialized ITCMRAM section into "ITCMRAM" ITCMRAM type memory [MMT section] */
+ .ITCMRAM_Section :
+  {
+    . = ALIGN(4);
+    KEEP (*(.ITCMRAM_Section))
+    . = ALIGN(4);
+  } >ITCMRAM
+
+ /*  Unitialized RAM_D2 section into "RAM_D2" RAM_D2 type memory [MMT section] */
+ .RAM_D2_Section :
+  {
+    . = ALIGN(4);
+    KEEP (*(.RAM_D2_Section))
+    . = ALIGN(4);
+  } >RAM_D2
+
 }

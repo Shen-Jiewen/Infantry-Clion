@@ -2,12 +2,15 @@
 // Created by Rick on 24-11-25.
 //
 
+#include <string.h>
+
 #include "cmsis_os.h"
 #include "vofa.h"
 #include "dt7.h"
 #include "chassis.h"
 #include "imu.h"
 #include "feedforward.h"
+
 
 _Noreturn void usb_task(__attribute__((unused)) void* argument){
 	osDelay(1000);

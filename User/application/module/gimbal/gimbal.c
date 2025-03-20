@@ -47,10 +47,8 @@ void gimbal_init(gimbal_control_t* init)
 	static const fp32 Pitch_speed_pid[3] = { PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD };
 
 	// 初始化云台电机类型和测量数据
-	init->gimbal_yaw_motor.motor_type = MOTOR_TYPE_6020;
-	init->gimbal_yaw_motor.motor_measure.motor_6020 = get_motor_6020_measure_point(0);
-	init->gimbal_pitch_motor.motor_type = MOTOR_TYPE_6020;
-	init->gimbal_pitch_motor.motor_measure.motor_6020 = get_motor_6020_measure_point(1);
+	init->gimbal_yaw_motor.motor_6020 = get_motor_6020_measure_point(0);
+	init->gimbal_pitch_motor.motor_6020 = get_motor_6020_measure_point(1);
 	// TODO : 校准的时候需要配置参数的位置
 	// 初始化云台Yaw和Pitch编码器中值
 	init->gimbal_yaw_motor.offset_ecd = 0;
@@ -156,7 +154,7 @@ void gimbal_feedback_update(gimbal_control_t* feedback_update)
 	// 更新俯仰电机的相对角度
 #if PITCH_TURN
 	// 如果启用了 PITCH_TURN，将相对角度计算为负值
-	feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.motor_measure.motor_6020->ecd,
+	feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.motor_6020->ecd,
 		feedback_update->gimbal_pitch_motor.offset_ecd);
 #else
 	// 否则使用正值计算相对角度
@@ -171,7 +169,7 @@ void gimbal_feedback_update(gimbal_control_t* feedback_update)
 	// 更新偏航电机的相对角度
 #if YAW_TURN
 	// 如果启用了 YAW_TURN，将相对角度计算为负值
-	feedback_update->gimbal_yaw_motor.relative_angle = - motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.motor_measure.motor_6020->ecd,
+	feedback_update->gimbal_yaw_motor.relative_angle = - motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.motor_6020->ecd,
 		feedback_update->gimbal_yaw_motor.offset_ecd);
 #else
 	// 否则使用正值计算相对角度
@@ -504,16 +502,7 @@ fp32 get_gimbal_motor_ecd(const gimbal_motor_t* motor)
 		return 0;
 	}
 
-	switch (motor->motor_type)
-	{
-	case MOTOR_TYPE_6020:
-		return motor->motor_measure.motor_6020->ecd;
-	case MOTOR_TYPE_4310:
-		return motor->motor_measure.motor_4310->ecd;
-	default:
-		break;
-	}
-	return 0;
+	return motor->motor_6020->ecd;
 }
 
 static void FDCAN_cmd_gimbal(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)

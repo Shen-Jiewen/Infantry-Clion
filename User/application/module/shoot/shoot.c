@@ -63,8 +63,8 @@ void shoot_init(shoot_control_t *shoot_init) {
 	//数据更新
 	shoot_feedback_update(shoot_init);
 
-	//初始化四个摩擦轮电机的速度和目标速度
-	for (uint8_t i = 0; i < 4; i++) {
+	//初始化两个摩擦轮电机的速度和目标速度
+	for (uint8_t i = 0; i < 2; i++) {
 		shoot_init->friction_motor[i].speed = 0.0f;
 		shoot_init->friction_motor[i].speed_set = 0.0f;
 	}
@@ -229,7 +229,7 @@ void shoot_set_mode(shoot_control_t *set_mode) {
 		if ((switch_is_down(set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL]) || set_mode->press_l) &&
 		    can_shoot) {
 			// TODO:添加自瞄标志位
-			// 如果云台处于自动模式且控制状态为2（可能表示火控模式），则打开发射机构。
+			// 如果云台处于自动模式且控制状态为2（可能表示火控模式），则打开发射机构.
 			if ((get_gimbal_behaviour() == GIMBAL_AUTO)) {
 				set_mode->shoot_mode = OPEN_TRIGGER;
 			}
