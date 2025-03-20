@@ -11,45 +11,48 @@
 #include "pid.h"
 #include "imu.h"
 
+//这个参数用来更改摇杆打上时是自瞄还是小陀螺 1-自瞄，0-小陀螺
+#define SET_AUTO_OR_GYRO    0
+
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        2000.0f//1500
-#define PITCH_SPEED_PID_KI        0.0f//5
+#define PITCH_SPEED_PID_KP        11000.0f//1500
+#define PITCH_SPEED_PID_KI        30.0f//5
 #define PITCH_SPEED_PID_KD        0.0f
-#define PITCH_SPEED_PID_MAX_OUT   200.0f
-#define PITCH_SPEED_PID_MAX_IOUT  10.0f
+#define PITCH_SPEED_PID_MAX_OUT   30000.0f
+#define PITCH_SPEED_PID_MAX_IOUT  20000.0f
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        10000.0f//3600
-#define YAW_SPEED_PID_KI        20.0f//20
+#define YAW_SPEED_PID_KP        25500.0f//3600
+#define YAW_SPEED_PID_KI        25.0f//20
 #define YAW_SPEED_PID_KD        0.0f
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
-#define YAW_SPEED_PID_MAX_IOUT  5000.0f
+#define YAW_SPEED_PID_MAX_IOUT  20000.0f
 
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP 0.02f  //15
+#define PITCH_GYRO_ABSOLUTE_PID_KP 16.0f  //15
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
-#define PITCH_GYRO_ABSOLUTE_PID_KD 0.0f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 10.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KD 0.30f
+#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 12.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_ABSOLUTE_PID_KP        30.0f  //28（26）
+#define YAW_GYRO_ABSOLUTE_PID_KP        18.0f  //28（26）
 #define YAW_GYRO_ABSOLUTE_PID_KI        0.0f
-#define YAW_GYRO_ABSOLUTE_PID_KD        0.0f  //0.3
-#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   10.0f
+#define YAW_GYRO_ABSOLUTE_PID_KD        0.375f  //0.3
+#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   15.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
 //pitch 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define PITCH_ENCODE_RELATIVE_PID_KP 0.0f   //  15
+#define PITCH_ENCODE_RELATIVE_PID_KP 20.0f   //  15
 #define PITCH_ENCODE_RELATIVE_PID_KI 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_KD 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 10.0f
+#define PITCH_ENCODE_RELATIVE_PID_KD 0.60f
+#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 12.0f
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        15.0f  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        0.0f
+#define YAW_ENCODE_RELATIVE_PID_KD        0.20f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -75,8 +78,8 @@
 
 #define GIMBAL_CONTROL_TIME 1
 
-#define PITCH_TURN  1//0
-#define YAW_TURN    1//0
+#define PITCH_TURN  0//0
+#define YAW_TURN    0//0
 
 //电机码盘值最大以及中值
 #define HALF_ECD_RANGE  4096
@@ -94,7 +97,7 @@
 #define INIT_PITCH_SET  0.0f
 
 //云台校准中值的时候，发送原始电流值，以及堵转时间，通过陀螺仪判断堵转
-#define GIMBAL_CALI_MOTOR_SET   20000
+#define GIMBAL_CALI_MOTOR_SET   12000
 #define GIMBAL_CALI_STEP_TIME   2000
 #define GIMBAL_CALI_GYRO_LIMIT  0.1f
 
@@ -110,7 +113,7 @@
 #define GIMBAL_MOTIONLESS_RC_DEADLINE 10
 #define GIMBAL_MOTIONLESS_TIME_MAX    3000
 
-// 云台电机的上下限位角度
+// 云台电机的上下限位角度，需要手动测试这几个值
 #define GIMBAL_MAX_YAW   1.57f
 #define GIMBAL_MIN_YAW  -1.57f
 #define GIMBAL_MAX_PITCH 0.52f
@@ -192,7 +195,7 @@ typedef struct
 	gimbal_motor_t gimbal_yaw_motor;        // 控制云台偏航电机的数据和控制变量的结构体。
 	gimbal_motor_t gimbal_pitch_motor;      // 控制云台俯仰电机的数据和控制变量的结构体。
 	gimbal_step_cali_t gimbal_cali;         // 云台步进位置的校准数据。
-
+    uint8_t auto_gyro_select;               //自瞄小陀螺选择
 	// 通信接口定义
 	void (* CAN_cmd_gimbal)(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 } gimbal_control_t;
