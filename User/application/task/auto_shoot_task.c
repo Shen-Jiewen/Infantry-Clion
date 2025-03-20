@@ -6,11 +6,12 @@
 #include "main.h"
 #include "auto_shoot.h"
 #include "cmsis_os2.h"
+#include "gimbal.h"
 
 auto_shoot_t *auto_shoot;
 
 _Noreturn void auto_shoot_task(__attribute__((unused)) void *argument) {
-    osDelay(1000);
+    osDelay(GIMBAL_TASK_INIT_TIME);
     auto_shoot = auto_shoot_get_instance();
     auto_shoot_init(auto_shoot);
 
@@ -25,6 +26,6 @@ _Noreturn void auto_shoot_task(__attribute__((unused)) void *argument) {
                                     &auto_shoot->solver_track);
         // 向上位机发送数据
         auto_shoot->send_message((uint8_t *)&auto_shoot->send_packed, sizeof(send_packed_t));
-        osDelay(2);
+        osDelay(GIMBAL_CONTROL_TIME);
     }
 }

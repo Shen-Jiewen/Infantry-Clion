@@ -17,7 +17,6 @@
 #define BULLET_FORWARD_DISTANCE    0.0f    // 枪口前推距离
 #define CAMERA_TO_YAW_AXIS_HEIGHT  0.0f    // 相机距离转轴高度
 
-
 // 装甲板ID枚举
 typedef enum {
     ARMOR_OUTPOST = 0, // 前哨站

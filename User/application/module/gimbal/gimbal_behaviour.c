@@ -53,7 +53,6 @@ static void handle_gimbal_switch_control(gimbal_control_t *gimbal_mode_set);
 
 static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
-static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
@@ -262,9 +261,10 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 	}
 	else if (gimbal_behaviour == GIMBAL_AUTO)
 	{
-//		gimbal_autoangel_control(add_yaw, add_pitch, gimbal_control_set);
+		// gimbal_autoangel_control(add_yaw, add_pitch, gimbal_control_set);
 	}
 }
+
 
 /**
   * @brief          当云台行为模式是GIMBAL_ZERO_FORCE, 这个函数会被调用,云台控制模式是raw模式.原始模式意味着
@@ -300,63 +300,6 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
 	{
 		*pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
 		*yaw = (INIT_YAW_SET - gimbal_control_set->gimbal_yaw_motor.relative_angle) * GIMBAL_INIT_YAW_SPEED;
-	}
-}
-
-/**
-  * @brief          云台校准控制，电机是raw控制，云台先抬起pitch，放下pitch，在正转yaw，最后反转yaw，记录当时的角度和编码值
-  * @author         RM
-  * @param[out]     yaw:发送yaw电机的原始值，会直接通过can 发送到电机
-  * @param[out]     pitch:发送pitch电机的原始值，会直接通过can 发送到电机
-  * @param[in]      gimbal_control_set:云台数据指针
-  * @retval         none
-  */
-static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
-{
-	static uint32_t cali_time = 0;
-
-	if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MAX_STEP)
-	{
-
-		*pitch = GIMBAL_CALI_MOTOR_SET;
-		*yaw = 0;
-
-		//判断陀螺仪数据， 并记录最大最小角度数据
-		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_pitch,
-			gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_pitch_ecd,
-			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_pitch_motor), gimbal_control_set->gimbal_cali.step)
-	}
-	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MIN_STEP)
-	{
-		*pitch = -GIMBAL_CALI_MOTOR_SET;
-		*yaw = 0;
-
-		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_pitch,
-			gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_pitch_ecd,
-			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_pitch_motor), gimbal_control_set->gimbal_cali.step)
-	}
-	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MAX_STEP)
-	{
-		*pitch = 0;
-		*yaw = GIMBAL_CALI_MOTOR_SET;
-
-		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_yaw,
-			gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_yaw_ecd,
-			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_yaw_motor), gimbal_control_set->gimbal_cali.step)
-	}
-
-	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MIN_STEP)
-	{
-		*pitch = 0;
-		*yaw = -GIMBAL_CALI_MOTOR_SET;
-
-		gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_yaw,
-			gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_yaw_ecd,
-			get_gimbal_motor_ecd(&gimbal_control_set->gimbal_yaw_motor), gimbal_control_set->gimbal_cali.step)
-	}
-	else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_END_STEP)
-	{
-		cali_time = 0;
 	}
 }
 

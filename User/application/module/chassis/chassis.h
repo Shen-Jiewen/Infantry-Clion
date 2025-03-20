@@ -140,7 +140,6 @@ typedef struct {
 	fp32 chassis_roll;  // 陀螺仪和云台电机叠加的roll角度
 
 	uint8_t gyroscape_flag;		//小陀螺开启标志位
-	uint8_t high_speed_flag;	//提速标志位
 	uint8_t auto_flag;			//自瞄标志位
 
 	// 通信接口定义

@@ -54,7 +54,7 @@
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
 //任务初始化 空闲一段时间
-#define GIMBAL_TASK_INIT_TIME 2000
+#define GIMBAL_TASK_INIT_TIME  2000
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   2
 #define PITCH_CHANNEL 3
@@ -75,8 +75,8 @@
 
 #define GIMBAL_CONTROL_TIME 1
 
-#define PITCH_TURN  1//0
-#define YAW_TURN    1//0
+#define PITCH_TURN  1
+#define YAW_TURN    1
 
 //电机码盘值最大以及中值
 #define HALF_ECD_RANGE  4096
@@ -142,16 +142,6 @@ typedef enum
 	MOTOR_FIELD_TEMPERATURE,  // 电机温度（通用字段）
 	MOTOR_FIELD_LAST_ECD      // 上一次的编码器数据（通用字段）
 } motor_common_field_t;
-
-/**
- * @brief 定义电机控制模式的枚举类型
- */
-typedef enum
-{
-	MOTOR_TYPE_6020,
-	MOTOR_TYPE_4310,
-	MOTOR_TYPE_UNKNOWN
-} motor_type_e;
 
 /**
  * @brief 定义电机控制数据结构体

@@ -45,7 +45,7 @@ _Noreturn void referee_task(__attribute__((unused)) void *argument){
 static void referee_callback(void)
 {
 	// 放到fifo中处理
-	fifo_s_puts(&referee_fifo, (char *)referee_buffer, USART_RX_BUF_LENGTH);
+	fifo_s_puts(&referee_fifo, referee_buffer, USART_RX_BUF_LENGTH);
 	// 掉线检测
 	detect_hook(REFEREE_TOE);
 }
