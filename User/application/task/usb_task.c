@@ -11,15 +11,14 @@
 #include "imu.h"
 #include "feedforward.h"
 
-
-_Noreturn void usb_task(__attribute__((unused)) void* argument){
+_Noreturn void usb_task(__attribute__((unused)) void *argument) {
 	osDelay(1000);
 	RC_ctrl_t *usb_dt7_ctrl = get_dt7_point();
 	imu_control_t *imu_control = get_imu_control_point();
 	const motor_6020_measure_t *motor0 = get_motor_6020_measure_point(1);
 
 	// 初始化
-	while (1){
+	while (1) {
 		vofa_send_data(0, imu_control->angle[0]);
 		vofa_send_data(1, imu_control->angle[1]);
 		vofa_send_data(2, imu_control->angle[2]);

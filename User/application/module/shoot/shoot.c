@@ -98,9 +98,6 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
 		return;
 	}
 
-	//更新拨弹电机数据
-	shoot_feedback->trigger_motor.motor_2006_measure = get_motor_2006_measure_point(2);
-
 	//更新摩擦轮电机速度
 	for (uint8_t i = 0; i < 2; i++) {
 		shoot_feedback->friction_motor[i].speed =
