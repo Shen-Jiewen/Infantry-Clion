@@ -298,7 +298,6 @@ void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer,fp32 *current_power_
 	*current_power_limit = game_robot_state_t.chassis_power_limit;
 }
 
-//该机器人设置为42mm 1号
 uint8_t get_robot_id(void)
 {
     return robot_state.robot_id;
