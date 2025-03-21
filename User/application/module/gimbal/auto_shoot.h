@@ -167,6 +167,8 @@ void auto_shoot_solve_trajectory(solver_track_t *solver_track, send_packed_t *se
 void autoshoot_prepare_send_data(const received_packed_t *received_packed, send_packed_t *send_packed,
                                  solver_track_t *solver_track);
 
+void set_auto_shoot_target(fp32* yaw_target,fp32* pitch_target);   //设置云台自瞄目标值
+
 // 获取自瞄实例
 auto_shoot_t *auto_shoot_get_instance(void);
 
