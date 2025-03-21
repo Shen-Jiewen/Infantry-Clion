@@ -10,6 +10,7 @@
 #include "stdbool.h"
 #include "gimbal.h"
 #include "feedforward.h"
+#include "auto_shoot.h"
 
 typedef enum
 {

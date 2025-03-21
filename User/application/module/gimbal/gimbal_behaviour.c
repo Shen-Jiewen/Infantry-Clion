@@ -56,6 +56,7 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
 static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, __attribute__((unused)) gimbal_control_t *gimbal_control_set);
+static void gimbal_auto_angle_control(fp32 *add_yaw, fp32 *add_pitch,__attribute__((unused)) gimbal_control_t * gimbal_control_set);
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
 static gimbal_behaviour_e last_gimbal_behaviour = GIMBAL_ZERO_FORCE;  //记录上次的行为模式
@@ -269,7 +270,7 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 	}
 	else if (gimbal_behaviour == GIMBAL_AUTO)
 	{
-		// gimbal_autoangel_control(add_yaw, add_pitch, gimbal_control_set);
+		 gimbal_auto_angle_control(add_yaw, add_pitch, gimbal_control_set);
 	}
 }
 
@@ -360,6 +361,25 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, __attribute__((unu
 {
 	*yaw = 0.0f;
 	*pitch = 0.0f;
+}
+
+;/**
+  * @brief          云台进行自动解算的角度控制：自瞄，目标标值由自瞄任务自动解算得到
+  * @author         RM
+  * @param[in]      add_yaw  : yaw轴角度控制，为角度的增量 单位 rad
+  * @param[in]      add_pitch: pitch轴角度控制，为角度的增量 单位 rad
+  * @param[in]      gimbal_control_set:云台数据指针
+  * @retval         none
+  */
+static void gimbal_auto_angle_control(fp32 *add_yaw, fp32 *add_pitch,__attribute__((unused)) gimbal_control_t * gimbal_control_set)
+{
+    //云台目标设置值临时变量
+    fp32 yaw_target, pitch_target;
+    //设置云台目标
+    set_auto_shoot_target(&yaw_target,&pitch_target);
+    //计算云台目标增量
+    *add_yaw   = yaw_target   - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+    *add_pitch = pitch_target - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 }
 
 /**
