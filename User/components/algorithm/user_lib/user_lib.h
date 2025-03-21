@@ -2,6 +2,10 @@
 #define USER_LIB_H
 #include "struct_typedef.h"
 
+#ifndef PI
+#define PI  3.1415926536f
+#endif
+
 typedef struct
 {
     fp32 input;        //输入数据

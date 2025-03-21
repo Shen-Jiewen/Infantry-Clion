@@ -328,26 +328,6 @@ void auto_shoot_solve_trajectory(solver_track_t *solver_track, send_packed_t *se
 }
 
 /**
-  * @brief          解算完成后由该函数设置云台电机的目标角度，用于后续的云台控制
-  * @author         RM
-  * @param[in]      yaw_target  : yaw轴角度控制，为角度的增量 单位 rad
-  * @param[in]      pitch_target: pitch轴角度控制，为角度的增量 单位 rad
-  * @retval         none
-  */
-void set_auto_shoot_target(fp32* yaw_target,fp32* pitch_target)
-{
-    if (yaw_target == NULL || pitch_target == NULL)
-    {
-        return;
-    }
-    if(auto_shoot.received_packed.tracking)  //识别到目标
-    {
-        *pitch_target = auto_shoot.solver_track.target_pitch;
-        *yaw_target   = rad_format(auto_shoot.solver_track.target_yaw);
-    }
-}
-
-/**
  * @brief  向上位机发送数据
  * @retval 无
  */

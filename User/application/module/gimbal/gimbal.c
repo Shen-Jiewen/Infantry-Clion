@@ -61,6 +61,8 @@ void gimbal_init(gimbal_control_t* init)
 	init->gimbal_INT_angle_point = get_INS_angle_point();  // 获取惯性导航系统（INS）角度数据指针
 	init->gimbal_INT_gyro_point = get_gyro_data_point();   // 获取陀螺仪数据指针
 
+    init->auto_shoot_point = auto_shoot_get_instance();   //获取自瞄任务指针
+
 	// 获取遥控器数据指针
 	init->gimbal_rc_ctrl = get_dt7_point();  // 获取遥控器数据指针
 

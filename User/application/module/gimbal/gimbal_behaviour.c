@@ -376,10 +376,16 @@ static void gimbal_auto_angle_control(fp32 *add_yaw, fp32 *add_pitch,__attribute
     //云台目标设置值临时变量
     fp32 yaw_target, pitch_target;
     //设置云台目标
-    set_auto_shoot_target(&yaw_target,&pitch_target);
+    if(gimbal_control_set->auto_shoot_point->received_packed.tracking)  //识别到目标
+    {
+        pitch_target = gimbal_control_set->auto_shoot_point->solver_track.target_pitch;
+        yaw_target   = rad_format(gimbal_control_set->auto_shoot_point->solver_track.target_yaw);
+    }
     //计算云台目标增量
     *add_yaw   = yaw_target   - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     *add_pitch = pitch_target - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
+
+
 }
 
 /**
