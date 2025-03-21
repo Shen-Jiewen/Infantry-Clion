@@ -4,6 +4,8 @@
 #include "user_lib.h"
 #include "imu.h"
 #include <string.h>
+
+#include "detect.h"
 #include "usbd_cdc_if.h"
 
 // 单例模式，静态全局变量
@@ -152,7 +154,8 @@ void auto_shoot_unpack_fifo_data(unpack_autoshoot_data_t *auto_shoot_unpack, fif
                                              CRC_INIT_AUTO) == check_sum) {
                         // 复制至结构体中
                         memcpy(received_packed, p_obj->protocol_packet, sizeof(received_packed_t));
-                        // 复制到传入的 received_packed
+                        // 掉线检测回调
+                        detect_hook(AUTO_SHOOT_TOE);
                     }
                 }
             }

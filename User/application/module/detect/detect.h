@@ -22,18 +22,12 @@ enum errorList
 	CHASSIS_MOTOR4_TOE,
 	YAW_GIMBAL_MOTOR_TOE,
 	PITCH_GIMBAL_MOTOR_TOE,
-	DOWN_TRIGGER_MOTOR_TOE,
-	BOARD_GYRO_TOE,
-	BOARD_ACCEL_TOE,
-	BOARD_MAG_TOE,
+	TRIGGER_MOTOR_TOE,
 	REFEREE_TOE,
-	RM_IMU_TOE,
-	OLED_TOE,
+	AUTO_SHOOT_TOE,
 	FRIC_MOTOR1_TOE,
 	FRIC_MOTOR2_TOE,
-	FRIC_MOTOR3_TOE,
-	FRIC_MOTOR4_TOE,
-	ERROR_LIST_LENGHT,
+	ERROR_LIST_LENGTH,
 };
 
 typedef struct __attribute((packed))
@@ -61,7 +55,7 @@ extern void detect_init(uint32_t time);
 
 /**
   * @brief          获取设备对应的错误状态
-  * @param[in]      toe:设备目录
+  * @param[in]      err:设备目录
   * @retval         true(错误) 或者false(没错误)
   */
 extern bool_t toe_is_error(uint8_t err);
@@ -75,7 +69,7 @@ extern void detect_hook(uint8_t toe);
 
 /**
   * @brief          得到错误列表
-  * @param[in]      none
+  * @param[in]
   * @retval         error_list的指针
   */
 extern error_t *get_error_list_point(void);
