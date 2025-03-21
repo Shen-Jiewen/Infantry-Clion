@@ -47,6 +47,7 @@ char auto_mode_string[20];
 char speed_dat_string[20];
 
 _Noreturn void ui_task(__attribute__((unused)) void *argument) {
+	UI_data = get_UI_data_point();
 	//分配内存
 	memset(&cap_vol_data, 0, sizeof(cap_vol_data));
 	memset(&gyro_flag_data, 0, sizeof(gyro_flag_data));
@@ -86,8 +87,8 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 	memset(&cap_energy_percent_line, 0, sizeof(cap_energy_percent_line));
 
 	//打印静态字符串或字符
-	// sprintf(cap_vol_data_string, "CAP_en:%3d", UI_data.cap_remain_energy);
-	// sprintf(dis_auto_data_string, "Dis: %.2f", UI_data.distance);
+	sprintf(cap_vol_data_string, "CAP_en:%3d", UI_data->cap_remain_energy);
+	sprintf(dis_auto_data_string, "Dis: %.2f", UI_data->distance);
 	sprintf(fric_flag_data_string, "fric: off");
 	sprintf(gyro_flag_data_string, "gyro: off");
 	sprintf(Tracking_id_string, " "); //追踪到的机器人ID
@@ -187,117 +188,117 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 	}
 
 	while (1) {
-		// //打印动态字符串或者图形
-		// sprintf(cap_vol_data_string, "CAP_en:%3d", UI_data.cap_remain_energy);
-		// sprintf(dis_auto_data_string, "Dis: %.2f", UI_data.distance);
-		// sprintf(Tracking_id_string, "%0d", UI_data.tracking_ID);
-		// sprintf(Allow_bullet_string, "%4d", UI_data.remain_bullet);
-		//
-		// if (UI_data.fric_flag == 1)
-		// 	sprintf(fric_flag_data_string, "fric: on "); //根据按键状态更新字符显示
-		// else
-		// 	sprintf(fric_flag_data_string, "fric: off");
-		// if (UI_data.gyro_flag == 1)
-		// 	sprintf(gyro_flag_data_string, "gyro: on ");
-		// else
-		// 	sprintf(gyro_flag_data_string, "gyro: off");
-		//
-		// //动态显示识别到的装甲板ID
-		// Char_Draw(&Tracking_id, "tra",UI_Graph_Change, 0,UI_Color_Green, 36, strlen(Tracking_id_string), 4, 966, 720,
-		//           Tracking_id_string); //追踪ID
-		// Char_ReFresh(Tracking_id);
-		// vTaskDelay(50);
-		//
-		// //显示自瞄装甲板距离
-		// Char_Draw(&dis_auto_data, "dia", UI_Graph_Change, 9, UI_Color_Orange, 24, strlen(dis_auto_data_string), 4, 1300,
-		//           400, dis_auto_data_string);
-		// Char_ReFresh(dis_auto_data);
-		// vTaskDelay(50);
-		//
-		// //显示允许发弹量
-		// Char_Draw(&Allow_bullet, "bul",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(Allow_bullet_string), 4,
-		//           UI_POS_X(1150),UI_POS_Y(547), Allow_bullet_string); //允许发弹量
-		// Char_ReFresh(Allow_bullet);
-		// vTaskDelay(50);
-		//
-		// //摩擦轮颜色改变
-		// if (UI_data.fric_flag) {
-		// 	Char_Draw(&fric_flag_data, "fri",UI_Graph_Change, 2,UI_Color_Purplish_red, 24,
-		// 	          strlen(fric_flag_data_string), 4,UI_POS_X(100), UI_POS_Y(380), fric_flag_data_string);
-		// } else {
-		// 	Char_Draw(&fric_flag_data, "fri",UI_Graph_Change, 2,UI_Color_White, 24, strlen(fric_flag_data_string), 4,
-		// 	          UI_POS_X(100), UI_POS_Y(380), fric_flag_data_string);
-		// }
-		// Char_ReFresh(fric_flag_data);
-		// vTaskDelay(50);
-		// //小陀螺颜色改变
-		// if (UI_data.gyro_flag) {
-		// 	Char_Draw(&gyro_flag_data, "gyr",UI_Graph_Change, 3,UI_Color_Purplish_red, 24,
-		// 	          strlen(gyro_flag_data_string), 4,UI_POS_X(100), UI_POS_Y(460), gyro_flag_data_string);
-		// } else {
-		// 	Char_Draw(&gyro_flag_data, "gyr",UI_Graph_Change, 3,UI_Color_White, 24, strlen(gyro_flag_data_string), 4,
-		// 	          UI_POS_X(100), UI_POS_Y(460), gyro_flag_data_string);
-		// }
-		// Char_ReFresh(gyro_flag_data);
-		// vTaskDelay(50);
-		// //动态显示电容电量
-		// if (UI_data.cap_remain_energy > 70) {
-		// 	Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(cap_vol_data_string), 4,
-		// 	          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
-		// 	Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Green, 15,UI_POS_X(10),
-		// 	          UI_POS_Y(300), UI_POS_X(UI_data.cap_remain_energy*3 +10), UI_POS_Y(300));
-		// } else if (UI_data.cap_remain_energy <= 70 && UI_data.cap_remain_energy > 40) {
-		// 	Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Orange, 24, strlen(cap_vol_data_string), 4,
-		// 	          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
-		// 	Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Orange, 15,UI_POS_X(10),
-		// 	          UI_POS_Y(300), UI_POS_X(UI_data.cap_remain_energy*3 +10), UI_POS_Y(300));
-		// } else if (UI_data.cap_remain_energy <= 40) {
-		// 	Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Purplish_red, 24, strlen(cap_vol_data_string), 4,
-		// 	          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
-		// 	Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Purplish_red, 15,UI_POS_X(10),
-		// 	          UI_POS_Y(300), UI_POS_X(UI_data.cap_remain_energy*3 +10), UI_POS_Y(300));
-		// }
-		// //刷新
-		// Char_ReFresh(cap_vol_data);
-		// vTaskDelay(50);
-		// UI_ReFresh(1, cap_energy_percent_line);
-		// vTaskDelay(100);
-		// //动态显示自瞄框
-		// if (UI_data.tracking_ID) {
-		// 	Line_Draw(&vision_horizontal_line1, "hl1", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 735, 746,
-		// 	          735);
-		// 	Line_Draw(&vision_horizontal_line2, "hl2", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 331, 746,
-		// 	          331);
-		// 	Line_Draw(&vision_horizontal_line3, "hl3", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 735, 1206,
-		// 	          735);
-		// 	Line_Draw(&vision_horizontal_line4, "hl4", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 331, 1206,
-		// 	          331);
-		//
-		// 	Line_Draw(&vision_vertical_line1, "vl1", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 331, 716, 361);
-		// 	Line_Draw(&vision_vertical_line2, "vl2", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 331, 1236,
-		// 	          361);
-		// 	Line_Draw(&vision_vertical_line3, "vl3", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 735, 716, 705);
-		// 	Line_Draw(&vision_vertical_line4, "vl4", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 735, 1236,
-		// 	          705);
-		// } else {
-		// 	Line_Draw(&vision_horizontal_line1, "hl1", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 735, 746, 735);
-		// 	Line_Draw(&vision_horizontal_line2, "hl2", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 331, 746, 331);
-		// 	Line_Draw(&vision_horizontal_line3, "hl3", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 735, 1206, 735);
-		// 	Line_Draw(&vision_horizontal_line4, "hl4", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 331, 1206, 331);
-		//
-		// 	Line_Draw(&vision_vertical_line1, "vl1", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 331, 716, 361);
-		// 	Line_Draw(&vision_vertical_line2, "vl2", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 331, 1236, 361);
-		// 	Line_Draw(&vision_vertical_line3, "vl3", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 735, 716, 705);
-		// 	Line_Draw(&vision_vertical_line4, "vl4", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 735, 1236, 705);
-		// }
-		// UI_ReFresh(7, vision_vertical_line1, vision_vertical_line2, vision_vertical_line3, vision_vertical_line4,\
-		//            vision_horizontal_line1, vision_horizontal_line2, vision_horizontal_line3);
-		// vTaskDelay(100);
-		// UI_ReFresh(1, vision_horizontal_line4);
-		// vTaskDelay(100);
+		//打印动态字符串或者图形
+		sprintf(cap_vol_data_string, "CAP_en:%3d", UI_data->cap_remain_energy);
+		sprintf(dis_auto_data_string, "Dis: %.2f", UI_data->distance);
+		sprintf(Tracking_id_string, "%0d", UI_data->tracking_ID);
+		sprintf(Allow_bullet_string, "%4d", UI_data->remain_bullet);
+
+		if (UI_data->fric_flag == 1)
+			sprintf(fric_flag_data_string, "fric: on "); //根据按键状态更新字符显示
+		else
+			sprintf(fric_flag_data_string, "fric: off");
+		if (UI_data->gyro_flag == 1)
+			sprintf(gyro_flag_data_string, "gyro: on ");
+		else
+			sprintf(gyro_flag_data_string, "gyro: off");
+
+		//动态显示识别到的装甲板ID
+		Char_Draw(&Tracking_id, "tra",UI_Graph_Change, 0,UI_Color_Green, 36, strlen(Tracking_id_string), 4, 966, 720,
+		          Tracking_id_string); //追踪ID
+		Char_ReFresh(Tracking_id);
+		vTaskDelay(50);
+
+		//显示自瞄装甲板距离
+		Char_Draw(&dis_auto_data, "dia", UI_Graph_Change, 9, UI_Color_Orange, 24, strlen(dis_auto_data_string), 4, 1300,
+		          400, dis_auto_data_string);
+		Char_ReFresh(dis_auto_data);
+		vTaskDelay(50);
+
+		//显示允许发弹量
+		Char_Draw(&Allow_bullet, "bul",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(Allow_bullet_string), 4,
+		          UI_POS_X(1150),UI_POS_Y(547), Allow_bullet_string); //允许发弹量
+		Char_ReFresh(Allow_bullet);
+		vTaskDelay(50);
+
+		//摩擦轮颜色改变
+		if (UI_data->fric_flag) {
+			Char_Draw(&fric_flag_data, "fri",UI_Graph_Change, 2,UI_Color_Purplish_red, 24,
+			          strlen(fric_flag_data_string), 4,UI_POS_X(100), UI_POS_Y(380), fric_flag_data_string);
+		} else {
+			Char_Draw(&fric_flag_data, "fri",UI_Graph_Change, 2,UI_Color_White, 24, strlen(fric_flag_data_string), 4,
+			          UI_POS_X(100), UI_POS_Y(380), fric_flag_data_string);
+		}
+		Char_ReFresh(fric_flag_data);
+		vTaskDelay(50);
+		//小陀螺颜色改变
+		if (UI_data->gyro_flag) {
+			Char_Draw(&gyro_flag_data, "gyr",UI_Graph_Change, 3,UI_Color_Purplish_red, 24,
+			          strlen(gyro_flag_data_string), 4,UI_POS_X(100), UI_POS_Y(460), gyro_flag_data_string);
+		} else {
+			Char_Draw(&gyro_flag_data, "gyr",UI_Graph_Change, 3,UI_Color_White, 24, strlen(gyro_flag_data_string), 4,
+			          UI_POS_X(100), UI_POS_Y(460), gyro_flag_data_string);
+		}
+		Char_ReFresh(gyro_flag_data);
+		vTaskDelay(50);
+		//动态显示电容电量
+		if (UI_data->cap_remain_energy > 70) {
+			Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(cap_vol_data_string), 4,
+			          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
+			Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Green, 15,UI_POS_X(10),
+			          UI_POS_Y(300), UI_POS_X(UI_data->cap_remain_energy*3 +10), UI_POS_Y(300));
+		} else if (UI_data->cap_remain_energy <= 70 && UI_data->cap_remain_energy > 40) {
+			Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Orange, 24, strlen(cap_vol_data_string), 4,
+			          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
+			Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Orange, 15,UI_POS_X(10),
+			          UI_POS_Y(300), UI_POS_X(UI_data->cap_remain_energy*3 +10), UI_POS_Y(300));
+		} else if (UI_data->cap_remain_energy <= 40) {
+			Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Purplish_red, 24, strlen(cap_vol_data_string), 4,
+			          UI_POS_X(100), UI_POS_Y(220), cap_vol_data_string);
+			Line_Draw(&cap_energy_percent_line, "caV", UI_Graph_Change, 0, UI_Color_Purplish_red, 15,UI_POS_X(10),
+			          UI_POS_Y(300), UI_POS_X(UI_data->cap_remain_energy*3 +10), UI_POS_Y(300));
+		}
+		//刷新
+		Char_ReFresh(cap_vol_data);
+		vTaskDelay(50);
+		UI_ReFresh(1, cap_energy_percent_line);
+		vTaskDelay(100);
+		//动态显示自瞄框
+		if (UI_data->tracking_ID) {
+			Line_Draw(&vision_horizontal_line1, "hl1", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 735, 746,
+			          735);
+			Line_Draw(&vision_horizontal_line2, "hl2", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 331, 746,
+			          331);
+			Line_Draw(&vision_horizontal_line3, "hl3", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 735, 1206,
+			          735);
+			Line_Draw(&vision_horizontal_line4, "hl4", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 331, 1206,
+			          331);
+
+			Line_Draw(&vision_vertical_line1, "vl1", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 331, 716, 361);
+			Line_Draw(&vision_vertical_line2, "vl2", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 331, 1236,
+			          361);
+			Line_Draw(&vision_vertical_line3, "vl3", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 735, 716, 705);
+			Line_Draw(&vision_vertical_line4, "vl4", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 1236, 735, 1236,
+			          705);
+		} else {
+			Line_Draw(&vision_horizontal_line1, "hl1", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 735, 746, 735);
+			Line_Draw(&vision_horizontal_line2, "hl2", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 331, 746, 331);
+			Line_Draw(&vision_horizontal_line3, "hl3", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 735, 1206, 735);
+			Line_Draw(&vision_horizontal_line4, "hl4", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 331, 1206, 331);
+
+			Line_Draw(&vision_vertical_line1, "vl1", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 331, 716, 361);
+			Line_Draw(&vision_vertical_line2, "vl2", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 331, 1236, 361);
+			Line_Draw(&vision_vertical_line3, "vl3", UI_Graph_Change, 0, UI_Color_Cyan, 3, 716, 735, 716, 705);
+			Line_Draw(&vision_vertical_line4, "vl4", UI_Graph_Change, 0, UI_Color_Cyan, 3, 1236, 735, 1236, 705);
+		}
+		UI_ReFresh(7, vision_vertical_line1, vision_vertical_line2, vision_vertical_line3, vision_vertical_line4,\
+		           vision_horizontal_line1, vision_horizontal_line2, vision_horizontal_line3);
+		vTaskDelay(100);
+		UI_ReFresh(1, vision_horizontal_line4);
+		vTaskDelay(100);
 
 		//系统复位
-		if ((get_dt7_point()->key.v & KEY_PRESSED_OFFSET_R) && (get_dt7_point()->key.v & KEY_PRESSED_OFFSET_CTRL)) {
+		if (get_dt7_point()->key.v & KEY_PRESSED_OFFSET_R && get_dt7_point()->key.v & KEY_PRESSED_OFFSET_CTRL) {
 			NVIC_SystemReset();
 		}
 	}

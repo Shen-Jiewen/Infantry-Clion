@@ -23,4 +23,10 @@ typedef struct {
     float UI_pitch;
 } UI_data_t;
 
+void UI_data_init(UI_data_t *UI_data);
+
+void UI_data_update(UI_data_t *UI_data);
+
+UI_data_t *get_UI_data_point(void);
+
 #endif //UI_DATA_H

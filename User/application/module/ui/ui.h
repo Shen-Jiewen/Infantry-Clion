@@ -100,52 +100,52 @@ typedef uint32_t u32;
 typedef uint16_t u16;
 
 typedef struct {
-	u8 SOF;          // 起始字节,固定0xA5
+	u8 SOF; // 起始字节,固定0xA5
 	u16 Data_Length; // 帧数据长度
-	u8 Seq;          // 包序号
-	u8 CRC8;         // CRC8校验值
-	u16 CMD_ID;      // 命令ID
-} UI_Packhead;       // 帧头
+	u8 Seq; // 包序号
+	u8 CRC8; // CRC8校验值
+	u16 CMD_ID; // 命令ID
+} UI_packed_head; // 帧头
 
 typedef struct {
-	u16 Data_ID;     // 内容ID
-	u16 Sender_ID;   // 发送者ID
+	u16 Data_ID; // 内容ID
+	u16 Sender_ID; // 发送者ID
 	u16 Receiver_ID; // 接收者ID
-} UI_Data_Operate;   // 操作定义帧
+} UI_Data_Operate; // 操作定义帧
 
 typedef struct {
 	u8 Delete_Operate; // 删除操作
-	u8 Layer;          // 删除图层
-} UI_Data_Delete;      // 删除图层帧
+	u8 Layer; // 删除图层
+} UI_Data_Delete; // 删除图层帧
 
 typedef struct {
 	uint8_t graphic_name[3];
-	uint32_t operate_type : 3;
-	uint32_t graphic_type : 3;
-	uint32_t layer : 4;
-	uint32_t color : 4;
-	uint32_t start_angle : 9;
-	uint32_t end_angle : 9;
-	uint32_t width : 10;
-	uint32_t start_x : 11;
-	uint32_t start_y : 11;
+	uint32_t operate_type: 3;
+	uint32_t graphic_type: 3;
+	uint32_t layer: 4;
+	uint32_t color: 4;
+	uint32_t start_angle: 9;
+	uint32_t end_angle: 9;
+	uint32_t width: 10;
+	uint32_t start_x: 11;
+	uint32_t start_y: 11;
 	float graph_Float; // 浮点数据
 } Float_Data;
 
 typedef struct {
 	uint8_t graphic_name[3];
-	uint32_t operate_type : 3;
-	uint32_t graphic_type : 3;
-	uint32_t layer : 4;
-	uint32_t color : 4;
-	uint32_t start_angle : 9;
-	uint32_t end_angle : 9;
-	uint32_t width : 10;
-	uint32_t start_x : 11;
-	uint32_t start_y : 11;
-	uint32_t radius : 10;
-	uint32_t end_x : 11;
-	uint32_t end_y : 11;
+	uint32_t operate_type: 3;
+	uint32_t graphic_type: 3;
+	uint32_t layer: 4;
+	uint32_t color: 4;
+	uint32_t start_angle: 9;
+	uint32_t end_angle: 9;
+	uint32_t width: 10;
+	uint32_t start_x: 11;
+	uint32_t start_y: 11;
+	uint32_t radius: 10;
+	uint32_t end_x: 11;
+	uint32_t end_y: 11;
 } Graph_Data;
 
 typedef struct {
@@ -153,82 +153,85 @@ typedef struct {
 	uint8_t show_Data[30];
 } String_Data; // 打印字符串数据
 
-void number_to_string(uint8_t* string_buff, const char* fmt, ...); // 数字转字符串
+void number_to_string(uint8_t *string_buff, const char *fmt, ...); // 数字转字符串
 
 int UI_ReFresh(int cnt, ...);
+
 int Char_ReFresh(String_Data string_Data);
+
 void UI_Delete(u8 Del_Operate, u8 Del_Layer);
 
-void Line_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 End_x,
-	u32 End_y);
+void Line_Draw(Graph_Data *image,
+               const char image_name[3],
+               u32 Graph_Operate,
+               u32 Graph_Layer,
+               u32 Graph_Color,
+               u32 Graph_Width,
+               u32 Start_x,
+               u32 Start_y,
+               u32 End_x,
+               u32 End_y);
 
-void Circle_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 Graph_Radius);
+void Circle_Draw(Graph_Data *image,
+                 const char image_name[3],
+                 u32 Graph_Operate,
+                 u32 Graph_Layer,
+                 u32 Graph_Color,
+                 u32 Graph_Width,
+                 u32 Start_x,
+                 u32 Start_y,
+                 u32 Graph_Radius);
 
-void Rectangle_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 End_x,
-	u32 End_y);
+void Rectangle_Draw(Graph_Data *image,
+                    const char image_name[3],
+                    u32 Graph_Operate,
+                    u32 Graph_Layer,
+                    u32 Graph_Color,
+                    u32 Graph_Width,
+                    u32 Start_x,
+                    u32 Start_y,
+                    u32 End_x,
+                    u32 End_y);
 
-void Float_Draw(Float_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Size,
-	u32 Graph_Digit,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	float Graph_Float);
+void Float_Draw(Float_Data *image,
+                const char image_name[3],
+                u32 Graph_Operate,
+                u32 Graph_Layer,
+                u32 Graph_Color,
+                u32 Graph_Size,
+                u32 Graph_Digit,
+                u32 Graph_Width,
+                u32 Start_x,
+                u32 Start_y,
+                float Graph_Float);
 
-void Char_Draw(String_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Size,
-	u32 Graph_Digit,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	char* Char_Data);
+void Char_Draw(String_Data *image,
+               const char image_name[3],
+               u32 Graph_Operate,
+               u32 Graph_Layer,
+               u32 Graph_Color,
+               u32 Graph_Size,
+               u32 Graph_Digit,
+               u32 Graph_Width,
+               u32 Start_x,
+               u32 Start_y,
+               char *Char_Data);
 
-void Arc_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_StartAngle,
-	u32 Graph_EndAngle,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 x_Length,
-	u32 y_Length);
+void Arc_Draw(Graph_Data *image,
+              const char image_name[3],
+              u32 Graph_Operate,
+              u32 Graph_Layer,
+              u32 Graph_Color,
+              u32 Graph_StartAngle,
+              u32 Graph_EndAngle,
+              u32 Graph_Width,
+              u32 Start_x,
+              u32 Start_y,
+              u32 x_Length,
+              u32 y_Length);
 
-unsigned char Get_CRC8_Check_Sum_UI(const unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8);
-uint16_t Get_CRC16_Check_Sum_UI(const uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC);
+unsigned char Get_CRC8_Check_Sum_UI(const unsigned char *pchMessage, unsigned int dwLength, unsigned char ucCRC8);
+
+uint16_t Get_CRC16_Check_Sum_UI(const uint8_t *pchMessage, uint32_t dwLength, uint16_t wCRC);
 
 #endif //UI_H_

@@ -11,7 +11,7 @@ u16 get_sender_id(u8 robot_id);
 u16 get_receiver_id(u8 robot_id);
 
 // 发送数据
-void send_data(unsigned char* data, int length);
+void send_data(unsigned char *data, int length);
 
 // 根据图形数量获取 Data_ID
 u16 get_data_id(int cnt);
@@ -22,12 +22,12 @@ u16 get_data_id(int cnt);
  * @param fmt 格式化字符串
  * @param ... 可变参数列表
  */
-void number_to_string(uint8_t* string_buff, const char* fmt, ...) {
+void number_to_string(uint8_t *string_buff, const char *fmt, ...) {
 	static va_list ap;
 	uint16_t remain_size = 0;
 
 	va_start(ap, fmt);
-	remain_size = vsprintf((char*)string_buff, fmt, ap);
+	remain_size = vsprintf((char *) string_buff, fmt, ap);
 	va_end(ap);
 
 	string_buff[remain_size] = '\0';
@@ -39,13 +39,13 @@ void number_to_string(uint8_t* string_buff, const char* fmt, ...) {
  * @param Del_Layer 删除的图层
  */
 void UI_Delete(u8 Del_Operate, u8 Del_Layer) {
-	UI_Packhead framehead = {
+	UI_packed_head framehead = {
 		.SOF = UI_SOF,
 		.Data_Length = 8,
 		.Seq = UI_Seq,
 		.CMD_ID = UI_CMD_Robo_Exchange
 	};
-	framehead.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char*)&framehead, 4, 0xFF);
+	framehead.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char *) &framehead, 4, 0xFF);
 
 	UI_Data_Operate datahead = {
 		.Data_ID = UI_Data_ID_Del,
@@ -59,14 +59,14 @@ void UI_Delete(u8 Del_Operate, u8 Del_Layer) {
 	};
 
 	u16 frametail = 0xFFFF;
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&framehead, sizeof(framehead), frametail);
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&datahead, sizeof(datahead), frametail);
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&del, sizeof(del), frametail);
+	frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &framehead, sizeof(framehead), frametail);
+	frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &datahead, sizeof(datahead), frametail);
+	frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &del, sizeof(del), frametail);
 
-	send_data((unsigned char*)&framehead, sizeof(framehead));
-	send_data((unsigned char*)&datahead, sizeof(datahead));
-	send_data((unsigned char*)&del, sizeof(del));
-	send_data((unsigned char*)&frametail, sizeof(frametail));
+	send_data((unsigned char *) &framehead, sizeof(framehead));
+	send_data((unsigned char *) &datahead, sizeof(datahead));
+	send_data((unsigned char *) &del, sizeof(del));
+	send_data((unsigned char *) &frametail, sizeof(frametail));
 
 	UI_Seq++;
 }
@@ -84,16 +84,16 @@ void UI_Delete(u8 Del_Operate, u8 Del_Layer) {
  * @param End_x 终点x坐标
  * @param End_y 终点y坐标
  */
-void Line_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 End_x,
-	u32 End_y) {
+void Line_Draw(Graph_Data *image,
+               const char image_name[3],
+               u32 Graph_Operate,
+               u32 Graph_Layer,
+               u32 Graph_Color,
+               u32 Graph_Width,
+               u32 Start_x,
+               u32 Start_y,
+               u32 End_x,
+               u32 End_y) {
 	int i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->graphic_name[2 - i] = image_name[i];
@@ -121,16 +121,16 @@ void Line_Draw(Graph_Data* image,
  * @param End_x 终点x坐标
  * @param End_y 终点y坐标
  */
-void Rectangle_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 End_x,
-	u32 End_y) {
+void Rectangle_Draw(Graph_Data *image,
+                    const char image_name[3],
+                    u32 Graph_Operate,
+                    u32 Graph_Layer,
+                    u32 Graph_Color,
+                    u32 Graph_Width,
+                    u32 Start_x,
+                    u32 Start_y,
+                    u32 End_x,
+                    u32 End_y) {
 	int i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->graphic_name[2 - i] = image_name[i];
@@ -158,15 +158,15 @@ void Rectangle_Draw(Graph_Data* image,
  * @param Start_y 圆心y坐标
  * @param Graph_Radius 圆的半径
  */
-void Circle_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 Graph_Radius) {
+void Circle_Draw(Graph_Data *image,
+                 const char image_name[3],
+                 u32 Graph_Operate,
+                 u32 Graph_Layer,
+                 u32 Graph_Color,
+                 u32 Graph_Width,
+                 u32 Start_x,
+                 u32 Start_y,
+                 u32 Graph_Radius) {
 	int i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->graphic_name[2 - i] = image_name[i];
@@ -196,18 +196,18 @@ void Circle_Draw(Graph_Data* image,
  * @param x_Length x轴长度
  * @param y_Length y轴长度
  */
-void Arc_Draw(Graph_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_StartAngle,
-	u32 Graph_EndAngle,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	u32 x_Length,
-	u32 y_Length) {
+void Arc_Draw(Graph_Data *image,
+              const char image_name[3],
+              u32 Graph_Operate,
+              u32 Graph_Layer,
+              u32 Graph_Color,
+              u32 Graph_StartAngle,
+              u32 Graph_EndAngle,
+              u32 Graph_Width,
+              u32 Start_x,
+              u32 Start_y,
+              u32 x_Length,
+              u32 y_Length) {
 	int i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->graphic_name[2 - i] = image_name[i];
@@ -239,17 +239,17 @@ void Arc_Draw(Graph_Data* image,
  * @param Start_y 起点y坐标
  * @param Graph_Float 浮点数值
  */
-void Float_Draw(Float_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Size,
-	u32 Graph_Digit,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	float Graph_Float) {
+void Float_Draw(Float_Data *image,
+                const char image_name[3],
+                u32 Graph_Operate,
+                u32 Graph_Layer,
+                u32 Graph_Color,
+                u32 Graph_Size,
+                u32 Graph_Digit,
+                u32 Graph_Width,
+                u32 Start_x,
+                u32 Start_y,
+                float Graph_Float) {
 	int i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->graphic_name[2 - i] = image_name[i];
@@ -280,17 +280,17 @@ void Float_Draw(Float_Data* image,
  * @param Start_y 起点y坐标
  * @param Char_Data 字符数据
  */
-void Char_Draw(String_Data* image,
-	const char image_name[3],
-	u32 Graph_Operate,
-	u32 Graph_Layer,
-	u32 Graph_Color,
-	u32 Graph_Size,
-	u32 Graph_Digit,
-	u32 Graph_Width,
-	u32 Start_x,
-	u32 Start_y,
-	char* Char_Data) {
+void Char_Draw(String_Data *image,
+               const char image_name[3],
+               u32 Graph_Operate,
+               u32 Graph_Layer,
+               u32 Graph_Color,
+               u32 Graph_Size,
+               u32 Graph_Digit,
+               u32 Graph_Width,
+               u32 Start_x,
+               u32 Start_y,
+               char *Char_Data) {
 	unsigned long long i;
 	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
 		image->Graph_Control.graphic_name[2 - i] = image_name[i];
@@ -320,13 +320,13 @@ void Char_Draw(String_Data* image,
 int UI_ReFresh(int cnt, ...) {
 	if (cnt != 1 && cnt != 2 && cnt != 5 && cnt != 7) return -1;
 
-	UI_Packhead framehead = {
+	UI_packed_head framehead = {
 		.SOF = UI_SOF,
 		.Data_Length = 6 + cnt * 15,
 		.Seq = UI_Seq,
 		.CMD_ID = UI_CMD_Robo_Exchange
 	};
-	framehead.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char*)&framehead, 4, 0xFF);
+	framehead.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char *) &framehead, 4, 0xFF);
 
 	UI_Data_Operate datahead = {
 		.Data_ID = get_data_id(cnt),
@@ -335,22 +335,22 @@ int UI_ReFresh(int cnt, ...) {
 	};
 
 	u16 frametail = 0xFFFF;
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&framehead, sizeof(framehead), frametail);
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&datahead, sizeof(datahead), frametail);
+	frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &framehead, sizeof(framehead), frametail);
+	frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &datahead, sizeof(datahead), frametail);
 
-	send_data((unsigned char*)&framehead, sizeof(framehead));
-	send_data((unsigned char*)&datahead, sizeof(datahead));
+	send_data((unsigned char *) &framehead, sizeof(framehead));
+	send_data((unsigned char *) &datahead, sizeof(datahead));
 
 	va_list ap;
 	va_start(ap, cnt);
 	for (int i = 0; i < cnt; i++) {
 		Graph_Data imageData = va_arg(ap, Graph_Data);
-		frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&imageData, sizeof(imageData), frametail);
-		send_data((unsigned char*)&imageData, sizeof(imageData));
+		frametail = Get_CRC16_Check_Sum_UI((unsigned char *) &imageData, sizeof(imageData), frametail);
+		send_data((unsigned char *) &imageData, sizeof(imageData));
 	}
 	va_end(ap);
 
-	send_data((unsigned char*)&frametail, sizeof(frametail));
+	send_data((unsigned char *) &frametail, sizeof(frametail));
 	UI_Seq++;
 	return 0;
 }
@@ -361,13 +361,13 @@ int UI_ReFresh(int cnt, ...) {
  * @return 成功返回0
  */
 int Char_ReFresh(String_Data string_Data) {
-	UI_Packhead ui_pack_head = {
+	UI_packed_head ui_pack_head = {
 		.SOF = UI_SOF,
 		.Data_Length = 6 + 45,
 		.Seq = UI_Seq,
 		.CMD_ID = UI_CMD_Robo_Exchange
 	};
-	ui_pack_head.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char*)&ui_pack_head, 4, 0xFF);
+	ui_pack_head.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char *) &ui_pack_head, 4, 0xFF);
 
 	UI_Data_Operate data_head = {
 		.Data_ID = UI_Data_ID_DrawChar,
@@ -376,14 +376,14 @@ int Char_ReFresh(String_Data string_Data) {
 	};
 
 	u16 frame_tail = 0xFFFF;
-	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&ui_pack_head, sizeof(ui_pack_head), frame_tail);
-	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&data_head, sizeof(data_head), frame_tail);
-	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&string_Data, sizeof(string_Data), frame_tail);
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char *) &ui_pack_head, sizeof(ui_pack_head), frame_tail);
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char *) &data_head, sizeof(data_head), frame_tail);
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char *) &string_Data, sizeof(string_Data), frame_tail);
 
-	send_data((unsigned char*)&ui_pack_head, sizeof(ui_pack_head));
-	send_data((unsigned char*)&data_head, sizeof(data_head));
-	send_data((unsigned char*)&string_Data, sizeof(string_Data));
-	send_data((unsigned char*)&frame_tail, sizeof(frame_tail));
+	send_data((unsigned char *) &ui_pack_head, sizeof(ui_pack_head));
+	send_data((unsigned char *) &data_head, sizeof(data_head));
+	send_data((unsigned char *) &string_Data, sizeof(string_Data));
+	send_data((unsigned char *) &frame_tail, sizeof(frame_tail));
 
 	UI_Seq++;
 	return 0;
@@ -417,7 +417,7 @@ const unsigned char CRC8_TAB_UI[256] = {
  * @param ucCRC8 初始CRC8值
  * @return 计算后的CRC8值
  */
-unsigned char Get_CRC8_Check_Sum_UI(const unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8) {
+unsigned char Get_CRC8_Check_Sum_UI(const unsigned char *pchMessage, unsigned int dwLength, unsigned char ucCRC8) {
 	while (dwLength--) {
 		const unsigned char ucIndex = ucCRC8 ^ *pchMessage++;
 		ucCRC8 = CRC8_TAB_UI[ucIndex];
@@ -469,13 +469,13 @@ const uint16_t wCRC_Table_UI[256] = {
  * @param wCRC 初始CRC16值
  * @return 计算后的CRC16值
  */
-uint16_t Get_CRC16_Check_Sum_UI(const uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC) {
+uint16_t Get_CRC16_Check_Sum_UI(const uint8_t *pchMessage, uint32_t dwLength, uint16_t wCRC) {
 	if (pchMessage == NULL) {
 		return 0xFFFF;
 	}
 	while (dwLength--) {
 		const Uint8_t chData = *pchMessage++;
-		wCRC = wCRC >> 8 ^ wCRC_Table_UI[(wCRC ^ (uint16_t)chData) & 0x00ff];
+		wCRC = wCRC >> 8 ^ wCRC_Table_UI[(wCRC ^ (uint16_t) chData) & 0x00ff];
 	}
 	return wCRC;
 }
@@ -487,24 +487,24 @@ uint16_t Get_CRC16_Check_Sum_UI(const uint8_t* pchMessage, uint32_t dwLength, ui
  */
 u16 get_sender_id(const u8 robot_id) {
 	switch (robot_id) {
-	case 1:
-		return UI_Data_RobotID_RHero;
-	case 101:
-		return UI_Data_RobotID_BHero;
-	case 5:
-		return Robot_ID;
-	case 105:
-		return UI_Data_RobotID_BStandard3;
-	case 4:
-		return UI_Data_RobotID_RStandard2;
-	case 3:
-		return UI_Data_RobotID_RStandard1;
-	case 104:
-		return UI_Data_RobotID_BStandard2;
-	case 103:
-		return UI_Data_RobotID_BStandard1;
-	default:
-		return 0;
+		case 1:
+			return UI_Data_RobotID_RHero;
+		case 101:
+			return UI_Data_RobotID_BHero;
+		case 5:
+			return Robot_ID;
+		case 105:
+			return UI_Data_RobotID_BStandard3;
+		case 4:
+			return UI_Data_RobotID_RStandard2;
+		case 3:
+			return UI_Data_RobotID_RStandard1;
+		case 104:
+			return UI_Data_RobotID_BStandard2;
+		case 103:
+			return UI_Data_RobotID_BStandard1;
+		default:
+			return 0;
 	}
 }
 
@@ -515,24 +515,24 @@ u16 get_sender_id(const u8 robot_id) {
  */
 u16 get_receiver_id(const u8 robot_id) {
 	switch (robot_id) {
-	case 1:
-		return UI_Data_CilentID_RHero;
-	case 101:
-		return UI_Data_CilentID_BHero;
-	case 5:
-		return Client_ID;
-	case 105:
-		return UI_Data_CilentID_BStandard3;
-	case 4:
-		return UI_Data_CilentID_RStandard2;
-	case 3:
-		return UI_Data_CilentID_RStandard1;
-	case 104:
-		return UI_Data_CilentID_BStandard2;
-	case 103:
-		return UI_Data_CilentID_BStandard1;
-	default:
-		return 0;
+		case 1:
+			return UI_Data_CilentID_RHero;
+		case 101:
+			return UI_Data_CilentID_BHero;
+		case 5:
+			return Client_ID;
+		case 105:
+			return UI_Data_CilentID_BStandard3;
+		case 4:
+			return UI_Data_CilentID_RStandard2;
+		case 3:
+			return UI_Data_CilentID_RStandard1;
+		case 104:
+			return UI_Data_CilentID_BStandard2;
+		case 103:
+			return UI_Data_CilentID_BStandard1;
+		default:
+			return 0;
 	}
 }
 
@@ -541,7 +541,7 @@ u16 get_receiver_id(const u8 robot_id) {
  * @param data 数据指针
  * @param length 数据长度
  */
-void send_data(unsigned char* data, const int length) {
+void send_data(unsigned char *data, const int length) {
 	for (int i = 0; i < length; i++) {
 		UI_SendByte(data[i]);
 	}
@@ -554,10 +554,10 @@ void send_data(unsigned char* data, const int length) {
  */
 u16 get_data_id(const int cnt) {
 	switch (cnt) {
-	case 1: return UI_Data_ID_Draw1;
-	case 2: return UI_Data_ID_Draw2;
-	case 5: return UI_Data_ID_Draw5;
-	case 7: return UI_Data_ID_Draw7;
-	default: return 0;
+		case 1: return UI_Data_ID_Draw1;
+		case 2: return UI_Data_ID_Draw2;
+		case 5: return UI_Data_ID_Draw5;
+		case 7: return UI_Data_ID_Draw7;
+		default: return 0;
 	}
 }
