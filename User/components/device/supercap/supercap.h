@@ -40,3 +40,5 @@ extern CapDataTypedef CAP_CANData;
 void CAP_CAN_RxCallback(uint16_t can_id, uint8_t *rx_data);
 
 uint8_t CAP_CAN_DataSend(FDCAN_HandleTypeDef *hfdcan, float lim_power, uint8_t capower_enable);
+
+CapDataTypedef *get_CAPower_measure_point(void);

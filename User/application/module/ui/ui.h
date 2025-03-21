@@ -1,13 +1,7 @@
-//
-// Created by Rick on 2025/1/4.
-//
-
 #ifndef UI_H_
 #define UI_H_
 
 #include "main.h"
-#include "stdarg.h"
-#include "struct_typedef.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "referee.h"
@@ -17,7 +11,7 @@ extern UART_HandleTypeDef huart1;
 #define UI_SendByte(byte) HAL_UART_Transmit(&huart1, (uint8_t *)&byte, 1, 0xFFFF)
 
 #define Robot_ID UI_Data_RobotID_RStandard3
-#define Cilent_ID UI_Data_CilentID_RStandard3
+#define Client_ID UI_Data_CilentID_RStandard3
 
 /**************************** 开始标志 *********************/
 #define UI_SOF 0xA5
@@ -166,7 +160,7 @@ int Char_ReFresh(String_Data string_Data);
 void UI_Delete(u8 Del_Operate, u8 Del_Layer);
 
 void Line_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -177,7 +171,7 @@ void Line_Draw(Graph_Data* image,
 	u32 End_y);
 
 void Circle_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -187,7 +181,7 @@ void Circle_Draw(Graph_Data* image,
 	u32 Graph_Radius);
 
 void Rectangle_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -198,7 +192,7 @@ void Rectangle_Draw(Graph_Data* image,
 	u32 End_y);
 
 void Float_Draw(Float_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -210,7 +204,7 @@ void Float_Draw(Float_Data* image,
 	float Graph_Float);
 
 void Char_Draw(String_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -222,7 +216,7 @@ void Char_Draw(String_Data* image,
 	char* Char_Data);
 
 void Arc_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -234,7 +228,7 @@ void Arc_Draw(Graph_Data* image,
 	u32 x_Length,
 	u32 y_Length);
 
-unsigned char Get_CRC8_Check_Sum_UI(unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8);
-uint16_t Get_CRC16_Check_Sum_UI(uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC);
+unsigned char Get_CRC8_Check_Sum_UI(const unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8);
+uint16_t Get_CRC16_Check_Sum_UI(const uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC);
 
 #endif //UI_H_

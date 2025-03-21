@@ -1,8 +1,5 @@
-//
-// Created by Rick on 2025/1/4.
-//
-
 #include "ui.h"
+#include "stdarg.h"
 
 extern ext_game_robot_state_t robot_state;
 unsigned char UI_Seq; // 包序号
@@ -77,7 +74,7 @@ void UI_Delete(u8 Del_Operate, u8 Del_Layer) {
 /**
  * @brief 绘制直线
  * @param image 图形数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -88,7 +85,7 @@ void UI_Delete(u8 Del_Operate, u8 Del_Layer) {
  * @param End_y 终点y坐标
  */
 void Line_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -98,8 +95,8 @@ void Line_Draw(Graph_Data* image,
 	u32 End_x,
 	u32 End_y) {
 	int i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->graphic_name[2 - i] = image_name[i];
 
 	image->operate_type = Graph_Operate;
 	image->layer = Graph_Layer;
@@ -114,7 +111,7 @@ void Line_Draw(Graph_Data* image,
 /**
  * @brief 绘制矩形
  * @param image 图形数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -125,7 +122,7 @@ void Line_Draw(Graph_Data* image,
  * @param End_y 终点y坐标
  */
 void Rectangle_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -135,8 +132,8 @@ void Rectangle_Draw(Graph_Data* image,
 	u32 End_x,
 	u32 End_y) {
 	int i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->graphic_name[2 - i] = image_name[i];
 
 	image->graphic_type = UI_Graph_Rectangle;
 	image->operate_type = Graph_Operate;
@@ -152,7 +149,7 @@ void Rectangle_Draw(Graph_Data* image,
 /**
  * @brief 绘制圆形
  * @param image 图形数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -162,7 +159,7 @@ void Rectangle_Draw(Graph_Data* image,
  * @param Graph_Radius 圆的半径
  */
 void Circle_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -171,8 +168,8 @@ void Circle_Draw(Graph_Data* image,
 	u32 Start_y,
 	u32 Graph_Radius) {
 	int i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->graphic_name[2 - i] = image_name[i];
 
 	image->graphic_type = UI_Graph_Circle;
 	image->operate_type = Graph_Operate;
@@ -187,7 +184,7 @@ void Circle_Draw(Graph_Data* image,
 /**
  * @brief 绘制圆弧
  * @param image 图形数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -200,7 +197,7 @@ void Circle_Draw(Graph_Data* image,
  * @param y_Length y轴长度
  */
 void Arc_Draw(Graph_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -212,8 +209,8 @@ void Arc_Draw(Graph_Data* image,
 	u32 x_Length,
 	u32 y_Length) {
 	int i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->graphic_name[2 - i] = image_name[i];
 
 	image->graphic_type = UI_Graph_Arc;
 	image->operate_type = Graph_Operate;
@@ -231,7 +228,7 @@ void Arc_Draw(Graph_Data* image,
 /**
  * @brief 绘制浮点数
  * @param image 浮点数数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -243,7 +240,7 @@ void Arc_Draw(Graph_Data* image,
  * @param Graph_Float 浮点数值
  */
 void Float_Draw(Float_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -254,8 +251,8 @@ void Float_Draw(Float_Data* image,
 	u32 Start_y,
 	float Graph_Float) {
 	int i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->graphic_name[2 - i] = image_name[i];
 
 	image->graphic_type = UI_Graph_Float;
 	image->operate_type = Graph_Operate;
@@ -272,7 +269,7 @@ void Float_Draw(Float_Data* image,
 /**
  * @brief 绘制字符
  * @param image 字符数据结构体指针
- * @param imagename 图形名称
+ * @param image_name 图形名称
  * @param Graph_Operate 图形操作类型
  * @param Graph_Layer 图形所在图层
  * @param Graph_Color 图形颜色
@@ -284,7 +281,7 @@ void Float_Draw(Float_Data* image,
  * @param Char_Data 字符数据
  */
 void Char_Draw(String_Data* image,
-	const char imagename[3],
+	const char image_name[3],
 	u32 Graph_Operate,
 	u32 Graph_Layer,
 	u32 Graph_Color,
@@ -295,8 +292,8 @@ void Char_Draw(String_Data* image,
 	u32 Start_y,
 	char* Char_Data) {
 	unsigned long long i;
-	for (i = 0; i < 3 && imagename[i] != '\0'; i++)
-		image->Graph_Control.graphic_name[2 - i] = imagename[i];
+	for (i = 0; i < 3 && image_name[i] != '\0'; i++)
+		image->Graph_Control.graphic_name[2 - i] = image_name[i];
 
 	image->Graph_Control.graphic_type = UI_Graph_Char;
 	image->Graph_Control.operate_type = Graph_Operate;
@@ -364,29 +361,29 @@ int UI_ReFresh(int cnt, ...) {
  * @return 成功返回0
  */
 int Char_ReFresh(String_Data string_Data) {
-	UI_Packhead framehead = {
+	UI_Packhead ui_pack_head = {
 		.SOF = UI_SOF,
 		.Data_Length = 6 + 45,
 		.Seq = UI_Seq,
 		.CMD_ID = UI_CMD_Robo_Exchange
 	};
-	framehead.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char*)&framehead, 4, 0xFF);
+	ui_pack_head.CRC8 = Get_CRC8_Check_Sum_UI((unsigned char*)&ui_pack_head, 4, 0xFF);
 
-	UI_Data_Operate datahead = {
+	UI_Data_Operate data_head = {
 		.Data_ID = UI_Data_ID_DrawChar,
 		.Sender_ID = get_sender_id(robot_state.robot_id),
 		.Receiver_ID = get_receiver_id(robot_state.robot_id)
 	};
 
-	u16 frametail = 0xFFFF;
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&framehead, sizeof(framehead), frametail);
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&datahead, sizeof(datahead), frametail);
-	frametail = Get_CRC16_Check_Sum_UI((unsigned char*)&string_Data, sizeof(string_Data), frametail);
+	u16 frame_tail = 0xFFFF;
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&ui_pack_head, sizeof(ui_pack_head), frame_tail);
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&data_head, sizeof(data_head), frame_tail);
+	frame_tail = Get_CRC16_Check_Sum_UI((unsigned char*)&string_Data, sizeof(string_Data), frame_tail);
 
-	send_data((unsigned char*)&framehead, sizeof(framehead));
-	send_data((unsigned char*)&datahead, sizeof(datahead));
+	send_data((unsigned char*)&ui_pack_head, sizeof(ui_pack_head));
+	send_data((unsigned char*)&data_head, sizeof(data_head));
 	send_data((unsigned char*)&string_Data, sizeof(string_Data));
-	send_data((unsigned char*)&frametail, sizeof(frametail));
+	send_data((unsigned char*)&frame_tail, sizeof(frame_tail));
 
 	UI_Seq++;
 	return 0;
@@ -420,10 +417,9 @@ const unsigned char CRC8_TAB_UI[256] = {
  * @param ucCRC8 初始CRC8值
  * @return 计算后的CRC8值
  */
-unsigned char Get_CRC8_Check_Sum_UI(unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8) {
-	unsigned char ucIndex;
+unsigned char Get_CRC8_Check_Sum_UI(const unsigned char* pchMessage, unsigned int dwLength, unsigned char ucCRC8) {
 	while (dwLength--) {
-		ucIndex = ucCRC8 ^ (*pchMessage++);
+		const unsigned char ucIndex = ucCRC8 ^ *pchMessage++;
 		ucCRC8 = CRC8_TAB_UI[ucIndex];
 	}
 	return (ucCRC8);
@@ -473,14 +469,13 @@ const uint16_t wCRC_Table_UI[256] = {
  * @param wCRC 初始CRC16值
  * @return 计算后的CRC16值
  */
-uint16_t Get_CRC16_Check_Sum_UI(uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC) {
-	Uint8_t chData;
+uint16_t Get_CRC16_Check_Sum_UI(const uint8_t* pchMessage, uint32_t dwLength, uint16_t wCRC) {
 	if (pchMessage == NULL) {
 		return 0xFFFF;
 	}
 	while (dwLength--) {
-		chData = *pchMessage++;
-		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ wCRC_Table_UI[((uint16_t)(wCRC) ^ (uint16_t)(chData)) & 0x00ff];
+		const Uint8_t chData = *pchMessage++;
+		wCRC = wCRC >> 8 ^ wCRC_Table_UI[(wCRC ^ (uint16_t)chData) & 0x00ff];
 	}
 	return wCRC;
 }
@@ -490,7 +485,7 @@ uint16_t Get_CRC16_Check_Sum_UI(uint8_t* pchMessage, uint32_t dwLength, uint16_t
  * @param robot_id 机器人ID
  * @return 发送者ID
  */
-u16 get_sender_id(u8 robot_id) {
+u16 get_sender_id(const u8 robot_id) {
 	switch (robot_id) {
 	case 1:
 		return UI_Data_RobotID_RHero;
@@ -518,14 +513,14 @@ u16 get_sender_id(u8 robot_id) {
  * @param robot_id 机器人ID
  * @return 接收者ID
  */
-u16 get_receiver_id(u8 robot_id) {
+u16 get_receiver_id(const u8 robot_id) {
 	switch (robot_id) {
 	case 1:
 		return UI_Data_CilentID_RHero;
 	case 101:
 		return UI_Data_CilentID_BHero;
 	case 5:
-		return Cilent_ID;
+		return Client_ID;
 	case 105:
 		return UI_Data_CilentID_BStandard3;
 	case 4:
@@ -546,7 +541,7 @@ u16 get_receiver_id(u8 robot_id) {
  * @param data 数据指针
  * @param length 数据长度
  */
-void send_data(unsigned char* data, int length) {
+void send_data(unsigned char* data, const int length) {
 	for (int i = 0; i < length; i++) {
 		UI_SendByte(data[i]);
 	}
@@ -557,7 +552,7 @@ void send_data(unsigned char* data, int length) {
  * @param cnt 图形数量
  * @return Data_ID
  */
-u16 get_data_id(int cnt) {
+u16 get_data_id(const int cnt) {
 	switch (cnt) {
 	case 1: return UI_Data_ID_Draw1;
 	case 2: return UI_Data_ID_Draw2;
