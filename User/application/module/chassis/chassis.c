@@ -134,11 +134,12 @@ void chassis_rc_to_control_vector(fp32* vx_set, fp32* vy_set, chassis_control_t*
 	// 最终速度输出
 	*vx_set = chassis_move_rc_to_vector->chassis_cmd_slow_set_vx.out;
 	*vy_set = chassis_move_rc_to_vector->chassis_cmd_slow_set_vy.out;
-    //前期发现使用选手端控制时其他模式无问题，但是小陀螺时车体行走方向相反，故添加这几句代码，看情况选择删除或保留
+
+    // 前期发现使用选手端控制时其他模式无问题，但是小陀螺时车体行走方向相反，故添加这几句代码，看情况选择删除或保留
     if(chassis_move_rc_to_vector->chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW)
     {
-        *vx_set = -(*vx_set);
-        *vy_set = -(*vy_set);
+        *vx_set = -*vx_set;
+        *vy_set = -*vy_set;
     }
 }
 
@@ -372,7 +373,7 @@ void chassis_feedback_update(chassis_control_t* chassis_move_update)
 		(-chassis_move_update->motor_chassis[0].speed - chassis_move_update->motor_chassis[1].speed
 			- chassis_move_update->motor_chassis[2].speed - chassis_move_update->motor_chassis[3].speed)
 			* MOTOR_SPEED_TO_CHASSIS_SPEED_WZ;
-    //原大疆代码这里根据云台更新底盘姿态，暂时用不到可以不移植，但在后续需要使用姿态完成一些底盘决策时再添加
+    // 原大疆代码这里根据云台更新底盘姿态，暂时用不到可以不移植，但在后续需要使用姿态完成一些底盘决策时再添加
 }
 
 /**
@@ -387,7 +388,7 @@ void chassis_set_control(chassis_control_t* chassis_move_control)
 	{
 		return;
 	}
-    //三个目标值
+	//三个目标值
 	fp32 vx_set = 0.0f, vy_set = 0.0f, angle_set = 0.0f;
 	// 获取三个控制设置值
 	chassis_behaviour_control_set(&vx_set, &vy_set, &angle_set, chassis_move_control);
@@ -421,9 +422,10 @@ static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, 
 
 	// 旋转控制底盘速度方向，保证前进方向是云台方向
 	sin_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
-	cos_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
+	cos_yaw = cosf(-chassis_move_control->chassis_yaw_motor->relative_angle);
 	chassis_move_control->vx_set = cos_yaw * vx_set  + sin_yaw * vy_set;
 	chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
+
 
 	// 设置控制相对云台角度
 	chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
@@ -433,13 +435,14 @@ static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, 
 		chassis_move_control->chassis_relative_angle_set);
 
 	// 速度限幅
-	chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set,
-		chassis_move_control->vx_min_speed,
-		chassis_move_control->vx_max_speed);
-	chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set,
-		chassis_move_control->vy_min_speed,
-		chassis_move_control->vy_max_speed);
+	// chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set,
+	// 	chassis_move_control->vx_min_speed,
+	// 	chassis_move_control->vx_max_speed);
+	// chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set,
+	// 	chassis_move_control->vy_min_speed,
+	// 	chassis_move_control->vy_max_speed);
 }
+
 
 /**
  * @brief          不跟随云台的角速度控制模式
@@ -592,7 +595,7 @@ void chassis_control_loop(chassis_control_t* chassis_move_control_loop)
 	}
 
 	// 功率控制
-	chassis_power_control(chassis_move_control_loop);
+	// chassis_power_control(chassis_move_control_loop);
 
 	//赋值电流值
 	for (i = 0; i < 4; i++)

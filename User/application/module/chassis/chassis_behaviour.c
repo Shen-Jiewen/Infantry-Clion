@@ -123,11 +123,11 @@ void chassis_behaviour_mode_set(chassis_control_t* chassis_move_mode)
             chassis_move_mode->gyro_flag = 0;
         }
         //通过鼠标开启自瞄
-        if(chassis_move_mode->chassis_RC->mouse.press_r )
+        if(chassis_move_mode->chassis_RC->mouse.press_r)
         {
             chassis_move_mode->auto_flag = 1;    //自瞄标志位
         }
-        else if(! chassis_move_mode->chassis_RC->mouse.press_r )
+        else if(! chassis_move_mode->chassis_RC->mouse.press_r)
         {
             chassis_move_mode->auto_flag = 0;
         }
@@ -199,10 +199,10 @@ void chassis_behaviour_control_set(fp32* vx_set,
 /**
   * @brief          底盘无力的行为状态机下，底盘模式是raw，故而设定值会直接发送到can总线上故而将设定值都设置为0
   * @author         RM
-  * @param[in]      vx_set前进的速度 设定值将直接发送到can总线上
-  * @param[in]      vy_set左右的速度 设定值将直接发送到can总线上
-  * @param[in]      wz_set旋转的速度 设定值将直接发送到can总线上
-  * @param[in]      chassis_move_rc_to_vector底盘数据
+  * @param[in]      vx_can_set 设定值将直接发送到can总线上
+  * @param[in]      vy_can_set 设定值将直接发送到can总线上
+  * @param[in]      wz_can_set 设定值将直接发送到can总线上
+  * @param[in]      chassis_move_rc_to_vector
   * @retval         返回空
   */
 
@@ -219,10 +219,10 @@ static void chassis_zero_force_control(fp32* vx_can_set,
 /**
   * @brief          底盘不移动的行为状态机下，底盘模式是不跟随角度，
   * @author         RM
-  * @param[in]      vx_set前进的速度,正值 前进速度， 负值 后退速度
-  * @param[in]      vy_set左右的速度,正值 左移速度， 负值 右移速度
-  * @param[in]      wz_set旋转的速度，旋转速度是控制底盘的底盘角速度
-  * @param[in]      chassis_move_rc_to_vector底盘数据
+  * @param[in]      vx_set 前进速度， 负值 后退速度
+  * @param[in]      vy_set 左移速度， 负值 右移速度
+  * @param[in]      wz_set 旋转速度是控制底盘的底盘角速度
+  * @param[in]      chassis_move_rc_to_vector
   * @retval         返回空
   */
 

@@ -69,7 +69,7 @@ include_directories(
         # dsp
         User/bsp/dm02
         # component/algorithm
-        User/components/algorithm/AHRS
+        User/components/algorithm/EKF
         User/components/algorithm/user_lib
         # component/controller
         User/components/controller/pid

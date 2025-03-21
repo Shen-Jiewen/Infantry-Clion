@@ -253,16 +253,16 @@ void MX_FREERTOS_Init(void) {
   buzzerTaskHandle = osThreadNew(buzzer_task, NULL, &buzzerTask_attributes);
 
   /* creation of shootTask */
-  shootTaskHandle = osThreadNew(shoot_task, NULL, &shootTask_attributes);
+  // shootTaskHandle = osThreadNew(shoot_task, NULL, &shootTask_attributes);
 
   /* creation of watchTask */
   watchTaskHandle = osThreadNew(watch_task, NULL, &watchTask_attributes);
 
   /* creation of uiTask */
-  uiTaskHandle = osThreadNew(ui_task, NULL, &uiTask_attributes);
+  // uiTaskHandle = osThreadNew(ui_task, NULL, &uiTask_attributes);
 
   /* creation of autoShoot */
-  autoShootHandle = osThreadNew(auto_shoot_task, NULL, &autoShoot_attributes);
+  // autoShootHandle = osThreadNew(auto_shoot_task, NULL, &autoShoot_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */

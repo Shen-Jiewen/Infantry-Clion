@@ -13,44 +13,44 @@
 #include "auto_shoot.h"
 
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        2000.0f//1500
+#define PITCH_SPEED_PID_KP        5000.0f//1500
 #define PITCH_SPEED_PID_KI        0.0f//5
 #define PITCH_SPEED_PID_KD        0.0f
-#define PITCH_SPEED_PID_MAX_OUT   200.0f
-#define PITCH_SPEED_PID_MAX_IOUT  10.0f
+#define PITCH_SPEED_PID_MAX_OUT   30000.0f
+#define PITCH_SPEED_PID_MAX_IOUT  20000.0f
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        10000.0f//3600
-#define YAW_SPEED_PID_KI        20.0f//20
+#define YAW_SPEED_PID_KP        25500.0f//3600
+#define YAW_SPEED_PID_KI        25.0f//20
 #define YAW_SPEED_PID_KD        0.0f
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
-#define YAW_SPEED_PID_MAX_IOUT  5000.0f
+#define YAW_SPEED_PID_MAX_IOUT  20000.0f
 
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP 0.02f  //15
+#define PITCH_GYRO_ABSOLUTE_PID_KP 5.0f  //15
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
 #define PITCH_GYRO_ABSOLUTE_PID_KD 0.0f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 10.0f
+#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 12.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_ABSOLUTE_PID_KP        30.0f  //28（26）
+#define YAW_GYRO_ABSOLUTE_PID_KP        18.0f  //28（26）
 #define YAW_GYRO_ABSOLUTE_PID_KI        0.0f
-#define YAW_GYRO_ABSOLUTE_PID_KD        0.0f  //0.3
-#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   10.0f
+#define YAW_GYRO_ABSOLUTE_PID_KD        0.375f  //0.3
+#define YAW_GYRO_ABSOLUTE_PID_MAX_OUT   15.0f
 #define YAW_GYRO_ABSOLUTE_PID_MAX_IOUT  0.0f
 
 //pitch 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define PITCH_ENCODE_RELATIVE_PID_KP 0.0f   //  15
+#define PITCH_ENCODE_RELATIVE_PID_KP 20.0f   //  15
 #define PITCH_ENCODE_RELATIVE_PID_KI 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_KD 0.0f
-#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 10.0f
+#define PITCH_ENCODE_RELATIVE_PID_KD 0.60f
+#define PITCH_ENCODE_RELATIVE_PID_MAX_OUT 12.0f
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        8.0f  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        15.0f  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        0.0f
+#define YAW_ENCODE_RELATIVE_PID_KD        0.2f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -77,7 +77,7 @@
 #define GIMBAL_CONTROL_TIME 1
 
 #define PITCH_TURN  1
-#define YAW_TURN    1
+#define YAW_TURN    0
 
 //电机码盘值最大以及中值
 #define HALF_ECD_RANGE  4096

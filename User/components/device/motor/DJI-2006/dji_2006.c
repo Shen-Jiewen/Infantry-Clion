@@ -58,7 +58,6 @@ void motor_2006_can_callback(uint32_t can_id, const uint8_t* rx_data)
 	{
 	case CAN_2006_M1_ID:
 		motor_2006_measure_parse(&motor_2006_measure[0], rx_data); // 解析电机1的数据
-		detect_hook(TRIGGER_MOTOR_TOE);
 		break;
 	case CAN_2006_M2_ID:
 		motor_2006_measure_parse(&motor_2006_measure[1], rx_data); // 解析电机2的数据
@@ -77,6 +76,7 @@ void motor_2006_can_callback(uint32_t can_id, const uint8_t* rx_data)
 		break;
 	case CAN_2006_M7_ID:
 		motor_2006_measure_parse(&motor_2006_measure[6], rx_data); // 解析电机7的数据
+		detect_hook(TRIGGER_MOTOR_TOE);
 		break;
 	case CAN_2006_M8_ID:
 		motor_2006_measure_parse(&motor_2006_measure[7], rx_data); // 解析电机8的数据

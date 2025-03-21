@@ -11,7 +11,7 @@ extern FDCAN_HandleTypeDef hfdcan2;
 static gimbal_control_t gimbal_control;
 
 static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd);
-static void gimbal_absolute_angle_limit(gimbal_motor_t* gimbal_motor, fp32 add, fp32 min, fp32 max);
+static void gimbal_absolute_angle_limit(gimbal_motor_t* gimbal_motor, fp32 add);
 static void gimbal_relative_angle_limit(gimbal_motor_t* gimbal_motor, fp32 add);
 
 static void gimbal_motor_raw_angle_control(gimbal_motor_t* gimbal_motor);
@@ -51,12 +51,12 @@ void gimbal_init(gimbal_control_t* init)
 	init->gimbal_pitch_motor.motor_6020 = get_motor_6020_measure_point(1);
 	// TODO : 校准的时候需要配置参数的位置,参数为相对角度控制模式下Pitch和Yaw的编码器角度值
 	// 初始化云台Yaw和Pitch编码器中值
-	init->gimbal_yaw_motor.offset_ecd = 0;
-	init->gimbal_pitch_motor.offset_ecd = 0;
-	init->gimbal_yaw_motor.max_relative_angle = 1.4f;
-	init->gimbal_yaw_motor.min_relative_angle = -1.4f;
-	init->gimbal_pitch_motor.max_relative_angle = 0.6f;
-	init->gimbal_pitch_motor.min_relative_angle = -0.3f;
+	init->gimbal_yaw_motor.offset_ecd = 6708;
+	init->gimbal_pitch_motor.offset_ecd = 2535;
+	init->gimbal_yaw_motor.max_relative_angle = 1.53f;
+	init->gimbal_yaw_motor.min_relative_angle = -1.53f;
+	init->gimbal_pitch_motor.max_relative_angle = 0.49f;
+	init->gimbal_pitch_motor.min_relative_angle = -0.41f;
 	// 获取陀螺仪数据和INS角度数据的指针
 	init->gimbal_INT_angle_point = get_INS_angle_point();  // 获取惯性导航系统（INS）角度数据指针
 	init->gimbal_INT_gyro_point = get_gyro_data_point();   // 获取陀螺仪数据指针
@@ -304,7 +304,7 @@ void gimbal_set_control(gimbal_control_t* set_control)
 	else if (set_control->gimbal_yaw_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
 	{
 		//gyro模式下，陀螺仪角度控制
-		gimbal_absolute_angle_limit(&set_control->gimbal_yaw_motor, add_yaw_angle, GIMBAL_MIN_YAW, GIMBAL_MAX_YAW);
+		gimbal_absolute_angle_limit(&set_control->gimbal_yaw_motor, add_yaw_angle);
 	}
 	else if (set_control->gimbal_yaw_motor.gimbal_motor_mode == GIMBAL_MOTOR_ENCONDE)
 	{
@@ -321,7 +321,7 @@ void gimbal_set_control(gimbal_control_t* set_control)
 	else if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
 	{
 		//gyro模式下，陀螺仪角度控制
-		gimbal_absolute_angle_limit(&set_control->gimbal_pitch_motor, add_pitch_angle, GIMBAL_MIN_PITCH, GIMBAL_MAX_PITCH);
+		gimbal_absolute_angle_limit(&set_control->gimbal_pitch_motor, add_pitch_angle);
 	}
 	else if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_ENCONDE)
 	{
@@ -340,13 +340,15 @@ void gimbal_set_control(gimbal_control_t* set_control)
   * @param[out]     gimbal_motor:yaw电机或者pitch电机
   * @retval         none
   */
-static void gimbal_absolute_angle_limit(gimbal_motor_t* gimbal_motor, fp32 add, fp32 min, fp32 max)
+static void gimbal_absolute_angle_limit(gimbal_motor_t* gimbal_motor, fp32 add)
 {
+	static fp32 angle_set;
 	if (gimbal_motor == NULL)
 	{
 		return;
 	}
-	gimbal_motor->absolute_angle_set = fp32_constrain(gimbal_motor->absolute_angle_set + add, min, max);
+	angle_set = gimbal_motor->absolute_angle_set;
+	gimbal_motor->absolute_angle_set = rad_format(angle_set + add);
 }
 
 /**

@@ -70,7 +70,7 @@ include_directories(
         # dsp
         User/bsp/dm02
         # component/algorithm
-        User/components/algorithm/AHRS
+        User/components/algorithm/EKF
         User/components/algorithm/user_lib
         # component/controller
         User/components/controller/pid
@@ -109,7 +109,9 @@ add_link_options(-T ${LINKER_SCRIPT})
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
 
-target_link_libraries(${PROJECT_NAME}.elf ${CMAKE_SOURCE_DIR}/Middlewares/ST/ARM/DSP/Lib/libarm_cortexM7lfsp_math.a)
+target_link_libraries(${PROJECT_NAME}.elf
+        ${CMAKE_SOURCE_DIR}/Middlewares/ST/ARM/DSP/Lib/libarm_cortexM7lfsp_math.a
+        ${CMAKE_SOURCE_DIR}/User/components/algorithm/AHRS/AHRS.lib)
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)

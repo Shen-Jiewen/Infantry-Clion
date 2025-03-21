@@ -27,7 +27,7 @@ _Noreturn void remote_control_task(__attribute__((unused)) void* argument)
 
 	while (1)
 	{
-		osThreadSuspend(osThreadGetId());
+		osDelay(1000);
 	}
 }
 

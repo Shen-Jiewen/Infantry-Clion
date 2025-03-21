@@ -143,8 +143,8 @@ int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue)
  */
 fp32 fp32_constrain(fp32 Value, fp32 minValue, fp32 maxValue)
 {
-	return (Value < minValue) ? minValue :
-		   (Value > maxValue) ? maxValue : Value;
+	return Value < minValue ? minValue :
+		   Value > maxValue ? maxValue : Value;
 }
 
 /**

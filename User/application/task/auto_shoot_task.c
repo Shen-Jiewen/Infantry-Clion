@@ -25,7 +25,7 @@ _Noreturn void auto_shoot_task(__attribute__((unused)) void *argument) {
         autoshoot_prepare_send_data(&auto_shoot->received_packed, &auto_shoot->send_packed,
                                     &auto_shoot->solver_track);
         // 向上位机发送数据
-        auto_shoot->send_message((uint8_t *)&auto_shoot->send_packed, sizeof(send_packed_t));
+        // auto_shoot->send_message((uint8_t *)&auto_shoot->send_packed, sizeof(send_packed_t));
         osDelay(GIMBAL_CONTROL_TIME);
     }
 }

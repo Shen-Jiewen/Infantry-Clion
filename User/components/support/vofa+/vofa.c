@@ -35,7 +35,7 @@ void vofa_start(void)
 void vofa_transmit(uint8_t* buf, uint16_t len)
 {
 //	HAL_UART_Transmit(&huart3, (uint8_t *)buf, len, 0xFFFF);
-	// CDC_Transmit_HS((uint8_t *)buf, len);
+	CDC_Transmit_HS((uint8_t *)buf, len);
 }
 
 /**

@@ -41,7 +41,7 @@ void shoot_init(shoot_control_t *shoot_init) {
 	shoot_init->shoot_rc_ctrl = get_dt7_point();
 
 	//初始化拨盘电机类型和测量数据
-	shoot_init->trigger_motor.motor_2006_measure = get_motor_2006_measure_point(2);
+	shoot_init->trigger_motor.motor_2006_measure = get_motor_2006_measure_point(6);
 
 	//初始化摩擦轮电机的测量数据
 	for (uint8_t i = 0; i < 2; i++) {

@@ -23,8 +23,5 @@ _Noreturn void imu_task(__attribute__((unused)) void *argument) {
 			imu_statistics_update(imu_control);
 			imu_temperature_control(imu_control);
 		}
-		if(ist_count == 50){
-			ist8310_read_mag(imu_control->magnetometer);
-		}
 	}
 }
