@@ -10,6 +10,7 @@
 #include "dt7.h"
 #include "pid.h"
 #include "imu.h"
+#include "auto_shoot.h"
 
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
 #define PITCH_SPEED_PID_KP        2000.0f//1500
@@ -177,6 +178,7 @@ typedef struct
 typedef struct
 {
 	const RC_ctrl_t* gimbal_rc_ctrl;        // 指向云台遥控控制输入的常量指针。
+    const auto_shoot_t * auto_shoot_point;                   //
 	const fp32* gimbal_INT_angle_point;     // 指向内部角度传感器数据点的常量指针，单位弧度。
 	const fp32* gimbal_INT_gyro_point;      // 指向内部陀螺仪传感器数据点的常量指针，单位弧度每秒。
 	gimbal_motor_t gimbal_yaw_motor;        // 控制云台偏航电机的数据和控制变量的结构体。

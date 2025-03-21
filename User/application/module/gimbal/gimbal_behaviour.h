@@ -11,6 +11,7 @@
 #include "gimbal.h"
 #include "feedforward.h"
 #include "auto_shoot.h"
+#include "user_lib.h"
 
 typedef enum
 {
