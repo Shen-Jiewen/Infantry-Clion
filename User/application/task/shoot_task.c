@@ -16,12 +16,10 @@ _Noreturn void shoot_task(__attribute__((unused)) void* argument)
 	shoot_init(shoot_control);
 
 	//判断是否允许开始任务循环
-	while (toe_is_error(DOWN_TRIGGER_MOTOR_TOE)||
+	while (toe_is_error(TRIGGER_MOTOR_TOE)||
 		toe_is_error(DBUS_TOE) ||
 		toe_is_error(FRIC_MOTOR1_TOE) ||
-		toe_is_error(FRIC_MOTOR2_TOE) ||
-		toe_is_error(FRIC_MOTOR3_TOE) ||
-		toe_is_error(FRIC_MOTOR4_TOE)
+		toe_is_error(FRIC_MOTOR2_TOE)
 		) {
 		osDelay(SHOOT_CONTROL_TIME);
 		shoot_feedback_update(shoot_control);
@@ -38,7 +36,7 @@ _Noreturn void shoot_task(__attribute__((unused)) void* argument)
 		shoot_control_loop(shoot_control);
 
 		// 发送CAN数据
-		if (!toe_is_error(DOWN_TRIGGER_MOTOR_TOE)) {
+		if (!toe_is_error(TRIGGER_MOTOR_TOE)) {
 			if (toe_is_error(DBUS_TOE)) {
 				shoot_control->CAN_cmd_shoot(0,0,0,0);
 			}

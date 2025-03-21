@@ -58,19 +58,16 @@ void motor_2006_can_callback(uint32_t can_id, const uint8_t* rx_data)
 	{
 	case CAN_2006_M1_ID:
 		motor_2006_measure_parse(&motor_2006_measure[0], rx_data); // 解析电机1的数据
-		detect_hook(CHASSIS_MOTOR1_TOE); // 调用检测钩子函数
+		detect_hook(TRIGGER_MOTOR_TOE);
 		break;
 	case CAN_2006_M2_ID:
 		motor_2006_measure_parse(&motor_2006_measure[1], rx_data); // 解析电机2的数据
-		detect_hook(CHASSIS_MOTOR2_TOE); // 调用检测钩子函数
 		break;
 	case CAN_2006_M3_ID:
 		motor_2006_measure_parse(&motor_2006_measure[2], rx_data); // 解析电机3的数据
-		detect_hook(CHASSIS_MOTOR3_TOE); // 调用检测钩子函数
 		break;
 	case CAN_2006_M4_ID:
 		motor_2006_measure_parse(&motor_2006_measure[3], rx_data); // 解析电机4的数据
-		detect_hook(CHASSIS_MOTOR4_TOE); // 调用检测钩子函数
 		break;
 	case CAN_2006_M5_ID:
 		motor_2006_measure_parse(&motor_2006_measure[4], rx_data); // 解析电机5的数据

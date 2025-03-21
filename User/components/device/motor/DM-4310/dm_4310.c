@@ -113,7 +113,7 @@ void DM4310_MotorEnable(uint8_t index)
  * @param hfdcan FDCAN的句柄。
  * @param id 数据帧的ID。
  * @param pos 位置给定。
- * @param _vel 速度给定。
+ * @param vel 速度给定。
  * @param KP 位置比例系数。
  * @param KD 位置微分系数。
  * @param torq 转矩给定值。
@@ -266,7 +266,6 @@ void motor_4310_can_callback(uint32_t can_id, const uint8_t* rx_data)
 	{
 	case FDCAN_DM4310_M1_MASTER_ID:
 		dm_4310_measure_parse(&dm_4310_measure[0], rx_data);
-		detect_hook(PITCH_GIMBAL_MOTOR_TOE);
 		break;
 	case FDCAN_DM4310_M2_MASTER_ID:
 		dm_4310_measure_parse(&dm_4310_measure[1], rx_data);

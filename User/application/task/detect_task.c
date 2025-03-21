@@ -21,11 +21,11 @@ _Noreturn void detect_task(__attribute__((unused)) void *argument){
 		static uint8_t error_num_display = 0;
 		system_time = osKernelGetTickCount();
 
-		error_num_display = ERROR_LIST_LENGHT;
-		error_list[ERROR_LIST_LENGHT].is_lost = 0;
-		error_list[ERROR_LIST_LENGHT].error_exist = 0;
+		error_num_display = ERROR_LIST_LENGTH;
+		error_list[ERROR_LIST_LENGTH].is_lost = 0;
+		error_list[ERROR_LIST_LENGTH].error_exist = 0;
 
-		for(int i = 0; i < ERROR_LIST_LENGHT; i++){
+		for(int i = 0; i < ERROR_LIST_LENGTH; i++){
 			// 未使能,跳过
 			if(error_list[i].enable == 0){
 				continue;
@@ -47,8 +47,8 @@ _Noreturn void detect_task(__attribute__((unused)) void *argument){
 					error_num_display = i;
 				}
 
-				error_list[ERROR_LIST_LENGHT].is_lost = 1;
-				error_list[ERROR_LIST_LENGHT].error_exist = 1;
+				error_list[ERROR_LIST_LENGTH].is_lost = 1;
+				error_list[ERROR_LIST_LENGTH].error_exist = 1;
 				// 如果提供解决函数,运行解决函数
 				if (error_list[i].solve_lost_fun != NULL)
 				{

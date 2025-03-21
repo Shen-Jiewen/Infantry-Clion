@@ -122,8 +122,8 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
 		{
 			// 处理 FDCAN2 的接收到的消息
 			// 摩擦轮3508、6020电机、2006电机、超级电容的数据处理
-			motor_6020_can_callback(RxHeader.Identifier, RxData);
 			shoot_3508_can_callback(RxHeader.Identifier, RxData);
+			motor_6020_can_callback(RxHeader.Identifier, RxData);
 			motor_2006_can_callback(RxHeader.Identifier, RxData);
 			CAP_CAN_RxCallback(RxHeader.Identifier, RxData);
 		}
