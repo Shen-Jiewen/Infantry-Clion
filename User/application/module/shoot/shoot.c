@@ -101,7 +101,7 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
 	//更新摩擦轮电机速度
 	for (uint8_t i = 0; i < 2; i++) {
 		shoot_feedback->friction_motor[i].speed =
-				(float) shoot_feedback->friction_motor[i].motor_3508_measure->speed_rpm * M3508_MOTOR_RPM_TO_VECTOR;
+				(float) shoot_feedback->friction_motor[i].motor_3508_measure->speed_rpm * FRICTION_ALL_COEFFICIENT;
 	}
 
 	//记录上次的键盘状态
@@ -163,6 +163,7 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
 	// 设置弹速：2*22-数组的均值
 	shoot_feedback->friction_motor[0].speed_set = 2 * 21.5f - average_speed;
 	shoot_feedback->friction_motor[1].speed_set = 2 * 21.5f - average_speed;
+
 }
 
 /**
@@ -176,19 +177,19 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
   * @retval         void
   */
 void shoot_set_mode(shoot_control_t *set_mode) {
-	static int8_t last_s = RC_SW_UP;
+	static uint8_t last_s = RC_SW_UP;
 
 	// 检测上位拨杆是否发生上升沿(从下/中拨到上拨)
 	if (switch_is_up(set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL]) && !switch_is_up(last_s)) {
-		// 切换射击模式：如果当前是停止状态，则开启摩擦轮；否则，停止射击。
+		// 切换射击模式：如果当前是停止状态，则开启摩擦轮；否则，停止射击
 		if (set_mode->shoot_mode == SHOOT_STOP) {
-			set_mode->shoot_mode = OPEN_FRIC; // 开启摩擦轮。
+			set_mode->shoot_mode = OPEN_FRIC; // 开启摩擦轮
 		} else {
-			set_mode->shoot_mode = SHOOT_STOP; // 停止射击。
+			set_mode->shoot_mode = SHOOT_STOP; // 停止射击
 		}
 	}
 
-	// 检测中位拨杆是否处于中间档位。
+	// 检测中位拨杆是否处于中间档位
 	else if (switch_is_mid(set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL])) {
 		// 如果按下“射击开启”的键盘按键，并且当前射击模式是停止状态，则开启摩擦轮。
 		if ((set_mode->shoot_rc_ctrl->key.v & SHOOT_ON_KEYBOARD) && set_mode->shoot_mode == SHOOT_STOP) {
@@ -244,6 +245,7 @@ void shoot_set_mode(shoot_control_t *set_mode) {
 			set_mode->shoot_mode = OPEN_FRIC;
 		}
 	}
+	last_s = set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL];
 }
 
 /**
@@ -327,10 +329,10 @@ void shoot_control_loop(shoot_control_t *control_loop) {
 #if FRIC_L_TURN
 		shoot_control.friction_motor[0].speed_set = -shoot_control.friction_motor[0].speed_set;
 #else
-		shoot_control.friction_motor[1].speed_set = -shoot_control.friction_motor[1].speed_set;
+		shoot_control.friction_motor[1].speed_set = shoot_control.friction_motor[1].speed_set;
 #endif
 		control_loop->friction_motor[0].give_current = (int16_t)PID_calc(&control_loop->friction_speed_pid[0], control_loop->friction_motor[0].speed, control_loop->friction_motor[0].speed_set);
-		control_loop->friction_motor[0].give_current = (int16_t)PID_calc(&control_loop->friction_speed_pid[1], control_loop->friction_motor[1].speed, control_loop->friction_motor[1].speed_set);
+		control_loop->friction_motor[1].give_current = (int16_t)PID_calc(&control_loop->friction_speed_pid[1], control_loop->friction_motor[1].speed, control_loop->friction_motor[1].speed_set);
 	}
 }
 

@@ -423,9 +423,10 @@ static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, 
 	// 旋转控制底盘速度方向，保证前进方向是云台方向
 	sin_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
 	cos_yaw = cosf(-chassis_move_control->chassis_yaw_motor->relative_angle);
-	chassis_move_control->vx_set = cos_yaw * vx_set  + sin_yaw * vy_set;
-	chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
-
+	// chassis_move_control->vx_set = cos_yaw * vx_set  + sin_yaw * vy_set;
+	// chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
+	chassis_move_control->vx_set = vx_set;
+	chassis_move_control->vy_set = vy_set;
 
 	// 设置控制相对云台角度
 	chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
@@ -435,14 +436,13 @@ static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, 
 		chassis_move_control->chassis_relative_angle_set);
 
 	// 速度限幅
-	// chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set,
-	// 	chassis_move_control->vx_min_speed,
-	// 	chassis_move_control->vx_max_speed);
-	// chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set,
-	// 	chassis_move_control->vy_min_speed,
-	// 	chassis_move_control->vy_max_speed);
+	chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set,
+		chassis_move_control->vx_min_speed,
+		chassis_move_control->vx_max_speed);
+	chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set,
+		chassis_move_control->vy_min_speed,
+		chassis_move_control->vy_max_speed);
 }
-
 
 /**
  * @brief          不跟随云台的角速度控制模式

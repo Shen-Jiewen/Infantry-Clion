@@ -253,7 +253,7 @@ void MX_FREERTOS_Init(void) {
   buzzerTaskHandle = osThreadNew(buzzer_task, NULL, &buzzerTask_attributes);
 
   /* creation of shootTask */
-  // shootTaskHandle = osThreadNew(shoot_task, NULL, &shootTask_attributes);
+  shootTaskHandle = osThreadNew(shoot_task, NULL, &shootTask_attributes);
 
   /* creation of watchTask */
   watchTaskHandle = osThreadNew(watch_task, NULL, &watchTask_attributes);

@@ -35,14 +35,14 @@ void imu_control_init(imu_control_t *imu_control) {
 	imu_control->solves_per_second = 0;
 
 	// AHRS初始化
-	IMU_QuaternionEKF_Init(10, 0.01f, 1000, 1, (fp32)1 / SAMPLE_RATE, 0); //ekf初始化
+	IMU_QuaternionEKF_Init(100, 0.1f, 10000, 1, (fp32)1 / SAMPLE_RATE, 0); //ekf初始化
 	Mahony_Init(SAMPLE_RATE);
 	MahonyAHRSinit(imu_control->accelerometer[0], imu_control->accelerometer[1], imu_control->accelerometer[2], 0, 0,
 	               0);
 
 	// 初始化温度PID控制器
-	const fp32 PID_params[3] = {30.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
-	PID_init(&imu_control->temp_pid, PID_POSITION, PID_params, 100.0f, 50.0f);
+	const fp32 PID_params[3] = {50.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
+	PID_init(&imu_control->temp_pid, PID_POSITION, PID_params, 1000.0f, 50.0f);
 }
 
 /**
@@ -141,8 +141,8 @@ void imu_temperature_control(imu_control_t *imu_control) {
 	// 限制PWM占空比在0到100之间
 	if (pwm_duty_cycle < 0.0f) {
 		pwm_duty_cycle = 0.0f;
-	} else if (pwm_duty_cycle > 100.0f) {
-		pwm_duty_cycle = 100.0f;
+	} else if (pwm_duty_cycle > 10000.0f) {
+		pwm_duty_cycle = 10000.0f;
 	}
 
 	// 更新PWM占空比

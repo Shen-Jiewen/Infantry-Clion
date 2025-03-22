@@ -42,6 +42,9 @@ void detect_init(uint32_t time) {
 		error_list[i].lost_time = time;
 		error_list[i].work_time = time;
 	}
+
+	error_list[REFEREE_TOE].enable = 0;
+	error_list[AUTO_SHOOT_TOE].enable = 0;
 }
 
 /**

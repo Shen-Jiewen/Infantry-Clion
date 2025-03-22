@@ -56,14 +56,14 @@ _Noreturn void gimbal_task(__attribute__((unused)) void* argument)
 			}
 			else
 			{
-				// gimbal_control->CAN_cmd_gimbal(0,
-				// 	(int16_t)gimbal_control->gimbal_pitch_motor.given_current,
-				// 	0,
-				// 	0);
 				gimbal_control->CAN_cmd_gimbal((int16_t)gimbal_control->gimbal_yaw_motor.given_current,
-					0,
+					(int16_t)gimbal_control->gimbal_pitch_motor.given_current,
 					0,
 					0);
+				// gimbal_control->CAN_cmd_gimbal((int16_t)gimbal_control->gimbal_yaw_motor.given_current,
+				// 	0,
+				// 	0,
+				// 	0);
 			}
 		}
 		osDelay(GIMBAL_CONTROL_TIME);

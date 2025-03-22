@@ -47,10 +47,6 @@
         }                                                                            \
     }
 
-static bool handle_calibration_mode(gimbal_control_t *gimbal_mode_set);
-
-static void handle_initialization_mode(gimbal_control_t *gimbal_mode_set);
-
 static void handle_gimbal_switch_control(gimbal_control_t *gimbal_mode_set);
 
 static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch,
@@ -105,14 +101,31 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set) {
   * @retval         none
   */
 void gimbal_behaviour_set(gimbal_control_t *gimbal_mode_set) {
-	// 校准模式处理，如果满足条件，返回，不继续处理其他模式
-	if (handle_calibration_mode(gimbal_mode_set)) {
-		return;
-	}
 
 	// 云台初始化模式处理
 	if (gimbal_behaviour == GIMBAL_INIT) {
-		handle_initialization_mode(gimbal_mode_set);
+		static uint16_t init_time = 0; // 初始化持续时间
+		static uint16_t init_stop_time = 0; // 初始化停止时间
+
+		// 检查云台是否到达目标位置，判断是否停止
+		if (fabsf(gimbal_mode_set->gimbal_yaw_motor.relative_angle - INIT_YAW_SET) < GIMBAL_INIT_ANGLE_ERROR &&
+		    fabsf(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR) {
+			if (init_stop_time < GIMBAL_INIT_STOP_TIME) {
+				init_stop_time++; // 云台已停稳，增加停止时间
+			}
+		} else {
+			if (init_time < GIMBAL_INIT_TIME) {
+				init_time++; // 如果未达到目标角度，增加初始化时间
+			}
+		}
+
+		// 若遥控器没有切换到关闭模式，且无错误，则继续初始化
+		if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME &&
+		    !switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE)) {
+			return;
+		}
+		init_stop_time = 0;
+		init_time = 0;
 	}
 
 	// 云台开关控制状态,设置云台模式
@@ -125,65 +138,6 @@ void gimbal_behaviour_set(gimbal_control_t *gimbal_mode_set) {
 
 	// 更新状态信息
 	last_gimbal_behaviour = gimbal_behaviour;
-}
-
-/**
-  * @brief          处理云台的校准模式，若在校准模式下，依据状态更新行为
-  * @param[in]      gimbal_mode_set: 云台数据指针，包含云台的校准状态
-  * @retval         true: 如果已经进入校准模式或不再执行其他模式，false: 否则
-  */
-static bool handle_calibration_mode(gimbal_control_t *gimbal_mode_set) {
-	// 校准行为时，若校准未结束，直接返回，不设置其他模式
-	if (gimbal_behaviour == GIMBAL_CALI && gimbal_mode_set->gimbal_cali.step != GIMBAL_CALI_END_STEP) {
-		return true;
-	}
-
-	// 外部指令将校准步骤从0变为开始，进入校准模式
-	if (gimbal_mode_set->gimbal_cali.step == GIMBAL_CALI_START_STEP && !toe_is_error(DBUS_TOE)) {
-		gimbal_behaviour = GIMBAL_CALI;
-		return true;
-	}
-
-	return false;
-}
-
-/**
-  * @brief          处理云台初始化模式，更新初始化时间并判断是否结束初始化
-  * @param[in]      gimbal_mode_set: 云台数据指针，包含云台的角度信息
-  * @retval         none
-  */
-static void handle_initialization_mode(gimbal_control_t *gimbal_mode_set) {
-	static uint16_t init_time = 0; // 初始化持续时间
-	static uint16_t init_stop_time = 0; // 初始化停止时间
-
-	init_time++; // 增加初始化时间计数
-
-	// 检查云台是否到达目标位置，判断是否停止
-	if (fabsf(gimbal_mode_set->gimbal_yaw_motor.relative_angle - INIT_YAW_SET) < GIMBAL_INIT_ANGLE_ERROR &&
-	    fabsf(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR) {
-		if (init_stop_time < GIMBAL_INIT_STOP_TIME) {
-			init_stop_time++; // 云台已停稳，增加停止时间
-		}
-	} else {
-		if (init_time < GIMBAL_INIT_TIME) {
-			init_time++; // 如果未达到目标角度，增加初始化时间
-		}
-	}
-
-	// 如果初始化时间超时或停止时间达到上限，退出初始化状态
-	if (init_time >= GIMBAL_INIT_TIME || init_stop_time >= GIMBAL_INIT_STOP_TIME) {
-		init_stop_time = 0;
-		init_time = 0;
-	}
-
-	// 若遥控器没有切换到关闭模式，且无错误，则继续初始化
-	if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME &&
-	    !switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE)) {
-		return;
-	} else {
-		init_stop_time = 0;
-		init_time = 0;
-	}
 }
 
 /**
@@ -268,7 +222,8 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch,
   * @retval         返回空
   */
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set) {
-	//初始化状态控制量计算
+	// 初始化状态控制量计算
+	// Pitch先抬升到中值,再将Yaw轴旋转到中值
 	if (fabsf(INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) > GIMBAL_INIT_ANGLE_ERROR) {
 		*pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
 		*yaw = 0.0f;
@@ -338,7 +293,7 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch,
 static void gimbal_auto_angle_control(fp32 *add_yaw, fp32 *add_pitch,
                                       __attribute__((unused)) gimbal_control_t *gimbal_control_set) {
 	//云台目标设置值临时变量
-	fp32 yaw_target, pitch_target;
+	fp32 yaw_target = 0.f, pitch_target = 0.f;
 	//设置云台目标
 	if (gimbal_control_set->auto_shoot_point->received_packed.tracking) //识别到目标
 	{

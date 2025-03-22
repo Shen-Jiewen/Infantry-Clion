@@ -62,7 +62,7 @@ _Noreturn void buzzer_task(__attribute__((unused)) void* argument)
 	{
 		// 查找错误
 		current_error = 0;  // 重置当前错误状态
-		for (error_index = 0; error_index < REFEREE_TOE; error_index++)
+		for (error_index = 0; error_index < ERROR_LIST_LENGTH; error_index++)
 		{
 			if (error_list_local[error_index].enable == 0)
 			{
