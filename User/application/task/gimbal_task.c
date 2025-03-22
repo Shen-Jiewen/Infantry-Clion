@@ -4,6 +4,7 @@
 
 #include "cmsis_os.h"
 #include "gimbal.h"
+#include "shoot.h"
 
 gimbal_control_t* gimbal_control;
 
@@ -56,14 +57,14 @@ _Noreturn void gimbal_task(__attribute__((unused)) void* argument)
 			}
 			else
 			{
-				gimbal_control->CAN_cmd_gimbal((int16_t)gimbal_control->gimbal_yaw_motor.given_current,
-					(int16_t)gimbal_control->gimbal_pitch_motor.given_current,
-					0,
-					0);
 				// gimbal_control->CAN_cmd_gimbal((int16_t)gimbal_control->gimbal_yaw_motor.given_current,
-				// 	0,
+				// 	(int16_t)gimbal_control->gimbal_pitch_motor.given_current,
 				// 	0,
 				// 	0);
+				gimbal_control->CAN_cmd_gimbal((int16_t)gimbal_control->gimbal_yaw_motor.given_current,
+					0,
+					get_shoot_control_point()->trigger_motor.give_current,
+					0);
 			}
 		}
 		osDelay(GIMBAL_CONTROL_TIME);

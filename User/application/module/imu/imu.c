@@ -35,7 +35,7 @@ void imu_control_init(imu_control_t *imu_control) {
 	imu_control->solves_per_second = 0;
 
 	// AHRS初始化
-	IMU_QuaternionEKF_Init(100, 0.1f, 10000, 1, (fp32)1 / SAMPLE_RATE, 0); //ekf初始化
+	IMU_QuaternionEKF_Init(1000, 0.001f, 10000, 1, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
 	Mahony_Init(SAMPLE_RATE);
 	MahonyAHRSinit(imu_control->accelerometer[0], imu_control->accelerometer[1], imu_control->accelerometer[2], 0, 0,
 	               0);
@@ -44,6 +44,7 @@ void imu_control_init(imu_control_t *imu_control) {
 	const fp32 PID_params[3] = {50.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
 	PID_init(&imu_control->temp_pid, PID_POSITION, PID_params, 1000.0f, 50.0f);
 }
+
 
 /**
  * @brief 获取IMU控制指针
@@ -99,11 +100,11 @@ void imu_data_update(imu_control_t *imu_control) {
 		imu_control->gyro_correct[1] += imu_control->gyroscope[1];
 		imu_control->gyro_correct[2] += imu_control->gyroscope[2];
 		imu_control->time_count++;
-		if (imu_control->time_count >= SAMPLE_RATE) {
-			imu_control->gyro_correct[0] /= SAMPLE_RATE;
-			imu_control->gyro_correct[1] /= SAMPLE_RATE;
-			imu_control->gyro_correct[2] /= SAMPLE_RATE;
-			imu_control->step_status = 1; //go to 2 state
+		if (imu_control->time_count >= 5 * SAMPLE_RATE) {
+			imu_control->gyro_correct[0] /= 5 * SAMPLE_RATE;
+			imu_control->gyro_correct[1] /= 5 * SAMPLE_RATE;
+			imu_control->gyro_correct[2] /= 5 * SAMPLE_RATE;
+			imu_control->step_status = 1;
 		}
 	}
 }

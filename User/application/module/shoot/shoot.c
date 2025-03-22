@@ -98,7 +98,19 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
 		return;
 	}
 
-	//更新摩擦轮电机速度
+	// 更新拨弹电机速度
+	static fp32 speed_filter_1 = 0.0f;
+	static fp32 speed_filter_2 = 0.0f;
+	static fp32 speed_filter_3 = 0.0f;
+	//拨弹轮电机速度滤波一下
+	static const fp32 filter_num[3] = {1.725709860247969f, -0.75594777109163436f, 0.030237910843665373f};
+	//二阶低通滤波
+	speed_filter_1 = speed_filter_2;
+	speed_filter_2 = speed_filter_3;
+	shoot_control.trigger_motor.speed = speed_filter_2 * filter_num[0] + speed_filter_1 * filter_num[1] + (float)
+	                                    shoot_control.trigger_motor.motor_2006_measure->speed_rpm * MOTOR_RPM_TO_SPEED;
+
+	// 更新摩擦轮电机速度
 	for (uint8_t i = 0; i < 2; i++) {
 		shoot_feedback->friction_motor[i].speed =
 				(float) shoot_feedback->friction_motor[i].motor_3508_measure->speed_rpm * FRICTION_ALL_COEFFICIENT;
@@ -163,7 +175,6 @@ void shoot_feedback_update(shoot_control_t *shoot_feedback) {
 	// 设置弹速：2*22-数组的均值
 	shoot_feedback->friction_motor[0].speed_set = 2 * 21.5f - average_speed;
 	shoot_feedback->friction_motor[1].speed_set = 2 * 21.5f - average_speed;
-
 }
 
 /**
@@ -224,14 +235,13 @@ void shoot_set_mode(shoot_control_t *set_mode) {
 #endif
 
 		// 如果允许射击，并且下位拨杆处于下拨状态或者鼠标左键被按下。
-		if ((switch_is_down(set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL]) || set_mode->press_l) &&
-		    can_shoot) {
+		if (switch_is_down(set_mode->shoot_rc_ctrl->rc.s[SHOOT_RC_MODE_CHANNEL]) || set_mode->press_l) {
 			// TODO:添加自瞄标志位
 			// 如果云台处于自动模式且控制状态为2（可能表示火控模式），则打开发射机构.
-			if ((get_gimbal_behaviour() == GIMBAL_AUTO)) {
+			if (get_gimbal_behaviour() == GIMBAL_AUTO) {
 				set_mode->shoot_mode = OPEN_TRIGGER;
 			}
-			// 如果云台不处于自动模式，则打开发射机构。
+			// 如果云台不处于自动模式，则打开发射机构
 			else if (get_gimbal_behaviour() != GIMBAL_AUTO) {
 				set_mode->shoot_mode = OPEN_TRIGGER;
 			}
@@ -323,7 +333,7 @@ void shoot_control_loop(shoot_control_t *control_loop) {
 		// 拨弹电机闭环控制
 		PID_calc(&control_loop->trigger_motor_pid, control_loop->trigger_motor.speed,
 		         control_loop->trigger_motor.speed_set);
-		control_loop->trigger_motor.give_current = (int16_t)control_loop->trigger_motor_pid.out;
+		control_loop->trigger_motor.give_current = (int16_t) control_loop->trigger_motor_pid.out;
 
 		//旋转方向由电机屁股看向输出轴 电流为正对应逆时针旋转
 #if FRIC_L_TURN
@@ -331,8 +341,12 @@ void shoot_control_loop(shoot_control_t *control_loop) {
 #else
 		shoot_control.friction_motor[1].speed_set = shoot_control.friction_motor[1].speed_set;
 #endif
-		control_loop->friction_motor[0].give_current = (int16_t)PID_calc(&control_loop->friction_speed_pid[0], control_loop->friction_motor[0].speed, control_loop->friction_motor[0].speed_set);
-		control_loop->friction_motor[1].give_current = (int16_t)PID_calc(&control_loop->friction_speed_pid[1], control_loop->friction_motor[1].speed, control_loop->friction_motor[1].speed_set);
+		control_loop->friction_motor[0].give_current = (int16_t) PID_calc(
+			&control_loop->friction_speed_pid[0], control_loop->friction_motor[0].speed,
+			control_loop->friction_motor[0].speed_set);
+		control_loop->friction_motor[1].give_current = (int16_t) PID_calc(
+			&control_loop->friction_speed_pid[1], control_loop->friction_motor[1].speed,
+			control_loop->friction_motor[1].speed_set);
 	}
 }
 

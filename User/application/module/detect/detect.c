@@ -1,14 +1,10 @@
-//
-// Created by Rick on 2024/12/10.
-//
-
 #include "detect.h"
 
 static error_t error_list[ERROR_LIST_LENGTH + 1];
 
-void detect_init(uint32_t time) {
+void detect_init(const uint32_t time) {
 	//设置离线时间，上线稳定工作时间，优先级 offlineTime online time priority
-	uint16_t set_item[ERROR_LIST_LENGTH][3] =
+	const uint16_t set_item[ERROR_LIST_LENGTH][3] =
 	{
 		{30, 40, 15}, //SBUS
 		{10, 10, 11}, //motor1
@@ -43,16 +39,18 @@ void detect_init(uint32_t time) {
 		error_list[i].work_time = time;
 	}
 
+	// 关闭裁判系统和自瞄报警
 	error_list[REFEREE_TOE].enable = 0;
 	error_list[AUTO_SHOOT_TOE].enable = 0;
 }
+
 
 /**
   * @brief          记录时间
   * @param[in]      toe:设备目录
   * @retval         none
   */
-void detect_hook(uint8_t toe) {
+void detect_hook(const uint8_t toe) {
 	error_list[toe].last_time = error_list[toe].new_time;
 	error_list[toe].new_time = xTaskGetTickCount();
 
@@ -79,11 +77,11 @@ void detect_hook(uint8_t toe) {
 
 /**
   * @brief          获取设备对应的错误状态
-  * @param[in]      toe:设备目录
+  * @param[in]      err:设备目录
   * @retval         true(错误) 或者false(没错误)
   */
-bool_t toe_is_error(uint8_t toe) {
-	return (error_list[toe].error_exist == 1);
+bool_t toe_is_error(const uint8_t err) {
+	return error_list[err].error_exist == 1;
 }
 
 error_t *get_error_list_point(void) {

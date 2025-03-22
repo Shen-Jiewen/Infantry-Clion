@@ -34,8 +34,9 @@ _Noreturn void shoot_task(__attribute__((unused)) void* argument)
 			else {
 				shoot_control->CAN_cmd_shoot(shoot_control->friction_motor[0].give_current,
 				shoot_control->friction_motor[1].give_current,
-				shoot_control->trigger_motor.give_current,
+				0,
 				0);
+				// shoot_control->Trigger_cmd_shoot(0,0,shoot_control->trigger_motor.give_current,0);
 			}
 		}
 		osDelay(SHOOT_CONTROL_TIME);

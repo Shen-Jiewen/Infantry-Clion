@@ -1,7 +1,3 @@
-//
-// Created by Rick on 24-11-26.
-//
-
 #include "chassis.h"
 #include "chassis_behaviour.h"
 #include "chassis_power_control.h"
@@ -418,15 +414,11 @@ void chassis_set_control(chassis_control_t* chassis_move_control)
  */
 static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, chassis_control_t* chassis_move_control)
 {
-	fp32 sin_yaw, cos_yaw;
-
 	// 旋转控制底盘速度方向，保证前进方向是云台方向
-	sin_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
-	cos_yaw = cosf(-chassis_move_control->chassis_yaw_motor->relative_angle);
-	// chassis_move_control->vx_set = cos_yaw * vx_set  + sin_yaw * vy_set;
-	// chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
-	chassis_move_control->vx_set = vx_set;
-	chassis_move_control->vy_set = vy_set;
+	const fp32 sin_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
+	const fp32 cos_yaw = cosf(-chassis_move_control->chassis_yaw_motor->relative_angle);
+	chassis_move_control->vx_set = cos_yaw * vx_set  + sin_yaw * vy_set;
+	chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
 
 	// 设置控制相对云台角度
 	chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
