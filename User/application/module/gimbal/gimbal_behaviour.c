@@ -54,7 +54,7 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch,
 
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
-static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, const gimbal_control_t *gimbal_control_set);
 
 static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
@@ -241,7 +241,7 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
   * @param[in]      gimbal_control_set:云台数据指针
   * @retval         none
   */
-static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set) {
+static void gimbal_absolute_angle_control(fp32 *yaw, fp32 *pitch, const gimbal_control_t *gimbal_control_set) {
 	static int16_t yaw_channel = 0, pitch_channel = 0;
 
 	rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND)

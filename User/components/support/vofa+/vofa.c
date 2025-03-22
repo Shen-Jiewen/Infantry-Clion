@@ -38,10 +38,10 @@ void vofa_start_demo(void)
     }
 
     /* 产生演示数据 */
-    float v1 = angle;  /* 角度值 */
-    float v2 = sinf(angle * PI / 180.0f) * 180.0f + 180.0f;  /* 正弦波 */
-    float v3 = sinf((angle + 120.0f) * PI / 180.0f) * 180.0f + 180.0f;  /* 相位偏移120度 */
-    float v4 = sinf((angle + 240.0f) * PI / 180.0f) * 180.0f + 180.0f;  /* 相位偏移240度 */
+    const float v1 = angle;  /* 角度值 */
+    const float v2 = sinf(angle * PI / 180.0f) * 180.0f + 180.0f;  /* 正弦波 */
+    const float v3 = sinf((angle + 120.0f) * PI / 180.0f) * 180.0f + 180.0f;  /* 相位偏移120度 */
+    const float v4 = sinf((angle + 240.0f) * PI / 180.0f) * 180.0f + 180.0f;  /* 相位偏移240度 */
 
     /* 添加数据到缓冲区 */
     vofa_append_data(v1);
@@ -59,7 +59,7 @@ void vofa_start_demo(void)
  * @param len 数据长度
  * @return 传输结果，0表示成功
  */
-uint8_t vofa_transmit_raw(uint8_t* buf, uint16_t len)
+uint8_t vofa_transmit_raw(uint8_t* buf, const uint16_t len)
 {
     /* 使用USB CDC发送数据 */
     return CDC_Transmit_HS(buf, len);
@@ -70,7 +70,7 @@ uint8_t vofa_transmit_raw(uint8_t* buf, uint16_t len)
  * @param data 要添加的浮点数据
  * @return 操作是否成功
  */
-bool vofa_append_data(float data)
+bool vofa_append_data(const float data)
 {
     /* 检查缓冲区是否已满 */
     if (vofa_buffer.count >= VOFA_MAX_BUFFER_SIZE / 4) {
@@ -89,7 +89,6 @@ bool vofa_append_data(float data)
 uint8_t vofa_send_frame(void)
 {
     uint16_t send_index = 0;
-    uint8_t result;
 
     /* 检查是否有数据需要发送 */
     if (vofa_buffer.count == 0) {
@@ -98,7 +97,7 @@ uint8_t vofa_send_frame(void)
 
     /* 将浮点数据打包到发送缓冲区 */
     for (uint16_t i = 0; i < vofa_buffer.count; i++) {
-        float value = vofa_buffer.data[i];
+        const float value = vofa_buffer.data[i];
         send_buf[send_index++] = vofa_float_byte0(value);
         send_buf[send_index++] = vofa_float_byte1(value);
         send_buf[send_index++] = vofa_float_byte2(value);
@@ -111,7 +110,7 @@ uint8_t vofa_send_frame(void)
     }
 
     /* 发送数据 */
-    result = vofa_transmit_raw(send_buf, send_index);
+    const uint8_t result = vofa_transmit_raw(send_buf, send_index);
 
     /* 清空缓冲区 */
     vofa_clear_buffer();
@@ -125,7 +124,7 @@ uint8_t vofa_send_frame(void)
  * @param data 要插入的浮点数据
  * @return 操作是否成功
  */
-bool vofa_insert_data(uint16_t index, float data)
+bool vofa_insert_data(const uint16_t index, const float data)
 {
     /* 检查索引是否有效且缓冲区未满 */
     if (index > vofa_buffer.count || vofa_buffer.count >= VOFA_MAX_BUFFER_SIZE / 4) {
@@ -149,7 +148,7 @@ bool vofa_insert_data(uint16_t index, float data)
  * @param index 要删除的数据索引
  * @return 操作是否成功
  */
-bool vofa_delete_data(uint16_t index)
+bool vofa_delete_data(const uint16_t index)
 {
     /* 检查索引是否有效 */
     if (index >= vofa_buffer.count) {
