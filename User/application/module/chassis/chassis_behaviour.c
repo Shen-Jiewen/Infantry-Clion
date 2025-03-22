@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/4.
-//
-
 #include "chassis_behaviour.h"
 
 /**
@@ -15,19 +11,6 @@
 static void chassis_zero_force_control(fp32* vx_can_set,
 	fp32* vy_can_set,
 	fp32* wz_can_set,
-	__attribute__((unused)) chassis_control_t* chassis_move_rc_to_vector);
-
-/**
-  * @brief          底盘不移动的行为状态机下，底盘模式是不跟随角度，所有速度设定为0
-  * @param[out]     vx_set: 纵向速度，设定值为0
-  * @param[out]     vy_set: 横向速度，设定值为0
-  * @param[out]     wz_set: 旋转速度，设定值为0
-  * @param[in]      chassis_move_rc_to_vector: 底盘控制数据指针
-  * @retval         none
-  */
-static void chassis_no_move_control(fp32* vx_set,
-	fp32* vy_set,
-	fp32* wz_set,
 	__attribute__((unused)) chassis_control_t* chassis_move_rc_to_vector);
 
 /**
@@ -54,19 +37,6 @@ static void chassis_follow_gimbal_yaw_control(fp32* vx_set,
   * @retval         none
   */
 static void chassis_no_follow_yaw_control(fp32* vx_set,
-	fp32* vy_set,
-	fp32* wz_set,
-	chassis_control_t* chassis_move_rc_to_vector);
-
-/**
-  * @brief          控制底盘的纵向、横向速度以及旋转速度，适用于开放式控制模式
-  * @param[out]     vx_set: 纵向速度指针，计算后的纵向速度值
-  * @param[out]     vy_set: 横向速度指针，计算后的横向速度值
-  * @param[out]     wz_set: 旋转速度指针，计算后的旋转速度值
-  * @param[in]      chassis_move_rc_to_vector: 底盘控制数据指针
-  * @retval         none
-  */
-static void chassis_open_set_control(fp32* vx_set,
 	fp32* vy_set,
 	fp32* wz_set,
 	chassis_control_t* chassis_move_rc_to_vector);
@@ -217,26 +187,6 @@ static void chassis_zero_force_control(fp32* vx_can_set,
 }
 
 /**
-  * @brief          底盘不移动的行为状态机下，底盘模式是不跟随角度，
-  * @author         RM
-  * @param[in]      vx_set 前进速度， 负值 后退速度
-  * @param[in]      vy_set 左移速度， 负值 右移速度
-  * @param[in]      wz_set 旋转速度是控制底盘的底盘角速度
-  * @param[in]      chassis_move_rc_to_vector
-  * @retval         返回空
-  */
-
-static void chassis_no_move_control(fp32* vx_set,
-	fp32* vy_set,
-	fp32* wz_set,
-	__attribute__((unused)) chassis_control_t* chassis_move_rc_to_vector)
-{
-	*vx_set = 0.0f;
-	*vy_set = 0.0f;
-	*wz_set = 0.0f;
-}
-
-/**
   * @brief          控制底盘的纵向、横向速度以及角度（取消摇摆功能）
   *
   * @param[out]     vx_set: 纵向速度指针
@@ -282,23 +232,3 @@ static void chassis_no_follow_yaw_control(fp32* vx_set,
         *wz_set = -CHASSIS_GYRO_WZ_SPEED;
     }
 }
-/**
-  * @brief          底盘开环的行为状态机下，底盘模式是raw原生状态，故而设定值会直接发送到can总线上
-  * @param[in]      vx_set前进的速度,正值 前进速度， 负值 后退速度
-  * @param[in]      vy_set左右的速度，正值 左移速度， 负值 右移速度
-  * @param[in]      wz_set 旋转速度， 正值 逆时针旋转，负值 顺时针旋转
-  * @param[in]      chassis_move_rc_to_vector底盘数据
-  * @retval         none
-  */
-static void chassis_open_set_control(fp32* vx_set,
-	fp32* vy_set,
-	fp32* wz_set,
-	chassis_control_t* chassis_move_rc_to_vector)
-{
-	*vx_set = (fp32)chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_X_CHANNEL] * CHASSIS_OPEN_RC_SCALE;
-	*vy_set = (fp32)-chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_Y_CHANNEL] * CHASSIS_OPEN_RC_SCALE;
-	*wz_set = (fp32)-chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_WZ_CHANNEL] * CHASSIS_OPEN_RC_SCALE;
-}
-
-
-

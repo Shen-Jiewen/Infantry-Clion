@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/10.
-//
-
 #ifndef IMU_H_
 #define IMU_H_
 
