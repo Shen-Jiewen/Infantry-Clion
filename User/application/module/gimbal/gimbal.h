@@ -101,12 +101,6 @@
 #define GIMBAL_MOTIONLESS_RC_DEADLINE 10
 #define GIMBAL_MOTIONLESS_TIME_MAX    3000
 
-// 云台电机的上下限位角度
-#define GIMBAL_MAX_YAW   1.57f
-#define GIMBAL_MIN_YAW  -1.57f
-#define GIMBAL_MAX_PITCH 0.52f
-#define GIMBAL_MIN_PITCH -0.52f
-
 //电机编码值转化成角度值
 #ifndef MOTOR_ECD_TO_RAD
 #define MOTOR_ECD_TO_RAD 0.000766990394f //      2*  PI  /8192

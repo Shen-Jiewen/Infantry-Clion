@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/5.
-//
-
 #include "gimbal.h"
 #include "arm_math.h"
 #include "gimbal_behaviour.h"
@@ -339,7 +335,7 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add) 
 void gimbal_absolute_angle_limit_pitch(gimbal_motor_t *gimbal_motor, fp32 add) {
 	if (!gimbal_motor) return;
 
-	// 计算当前角度偏差（规范化到弧度范围）
+	// 计算当前角度偏差
 	const fp32 bias = rad_format(gimbal_motor->absolute_angle_set - gimbal_motor->absolute_angle);
 
 	// 计算预期总相对角度
@@ -348,8 +344,7 @@ void gimbal_absolute_angle_limit_pitch(gimbal_motor_t *gimbal_motor, fp32 add) {
 	// 机械角度限幅保护
 	if (add > 0 && projected > gimbal_motor->max_relative_angle) {
 		add = gimbal_motor->max_relative_angle - (gimbal_motor->relative_angle + bias);
-	}
-	else if (add < 0 && projected < gimbal_motor->min_relative_angle) {
+	} else if (add < 0 && projected < gimbal_motor->min_relative_angle) {
 		add = gimbal_motor->min_relative_angle - (gimbal_motor->relative_angle + bias);
 	}
 
