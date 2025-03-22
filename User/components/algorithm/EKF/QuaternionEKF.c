@@ -129,11 +129,13 @@ void IMU_QuaternionEKF_Reset(void) {
 }
 
 /**
- * @brief Quaternion EKF update
- * @param[in] 	quaternion need to be updated
-* @param[in] 	gyro x y z in rad/s
- * @param[in] 	accel x y z in m/s²
- * @param[in] 	update period in s
+ *
+ * @param gx x轴陀螺仪数据
+ * @param gy y轴陀螺仪数据
+ * @param gz z轴陀螺仪数据
+ * @param ax x轴加速度数据
+ * @param ay y轴加速度数据
+ * @param az z轴加速度数据
  */
 void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, float az) {
     // 0.5(Ohm-Ohm^bias)*deltaT,用于更新工作点处的状态转移F矩阵
@@ -176,7 +178,7 @@ void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, 
     QEKF_INS.IMU_QuaternionEKF.F_data[19] = halfgydt;
     QEKF_INS.IMU_QuaternionEKF.F_data[20] = -halfgxdt;
 
-    // accel low pass filter,加速度过一下低通滤波平滑数据,降低撞击和异常的影响
+    // 加速度过一下低通滤波平滑数据,降低撞击和异常的影响
     if (QEKF_INS.UpdateCount == 0) // 如果是第一次进入,需要初始化低通滤波
     {
         QEKF_INS.Accel[0] = ax;
@@ -190,13 +192,11 @@ void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, 
     QEKF_INS.Accel[1] = QEKF_INS.Accel[1] * QEKF_INS.accLPFcoef * temp_quick + ay * QEKF_INS.dt * temp_quick;
     QEKF_INS.Accel[2] = QEKF_INS.Accel[2] * QEKF_INS.accLPFcoef * temp_quick + az * QEKF_INS.dt * temp_quick;
 
-    // set z,单位化重力加速度向量
-
+    // 单位化重力加速度向量
     QEKF_INS.accl_norm = sqrtf(
         QEKF_INS.Accel[0] * QEKF_INS.Accel[0] + QEKF_INS.Accel[1] * QEKF_INS.Accel[1] + QEKF_INS.Accel[2] * QEKF_INS.
         Accel[2]);
     const volatile float accelInvNorm = 1.0f / QEKF_INS.accl_norm;
-
 
     QEKF_INS.IMU_QuaternionEKF.MeasuredVector[0] = QEKF_INS.Accel[0] * accelInvNorm; // 用加速度向量更新量测值
     QEKF_INS.IMU_QuaternionEKF.MeasuredVector[1] = QEKF_INS.Accel[1] * accelInvNorm;

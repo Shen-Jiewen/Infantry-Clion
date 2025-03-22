@@ -1,3 +1,4 @@
+#include "chassis.h"
 #include "cmsis_os.h"
 #include "vofa.h"
 #include "dt7.h"
@@ -40,6 +41,12 @@ _Noreturn void usb_task(__attribute__((unused)) void *argument) {
 		vofa_append_data(imu_control->temperature);
 		vofa_append_data(get_gimbal_pitch_current());
 		vofa_append_data(get_gimbal_yaw_current());
+
+		/* 添加Yaw轴电机角度设置值 */
+		vofa_append_data(get_gimbal_control_point()->gimbal_yaw_motor.absolute_angle_set);
+		vofa_append_data(get_gimbal_control_point()->gimbal_yaw_motor.absolute_angle);
+		vofa_append_data(get_chassis_control_point()->wz_set);
+		vofa_append_data(get_chassis_control_point()->wz);
 
 		/* 发送一帧数据 */
 		vofa_send_frame();
