@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/30.
-//
-
 #include "tick.h"
 
 extern TIM_HandleTypeDef htim24;

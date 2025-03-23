@@ -5,6 +5,7 @@
 #include "bsp_pwm.h"
 #include "cmsis_os.h"
 #include "QuaternionEKF.h"
+#include "tick.h"
 
 #define SAMPLE_RATE 1000
 #define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
@@ -34,7 +35,7 @@ void imu_control_init(imu_control_t *imu_control) {
 	imu_control->solves_per_second = 0;
 
 	// AHRS初始化
-	IMU_QuaternionEKF_Init(10, 0.001f, 1000000,  0.9996, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
+	IMU_QuaternionEKF_Init(1000, 0.01f, 10000,  0.9996f, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
 
 	// 初始化温度PID控制器
 	const fp32 PID_params[3] = {50.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
@@ -71,9 +72,9 @@ void imu_hardware_init(void) {
  * @param imu_control IMU控制结构体指针
  */
 void imu_data_update(imu_control_t *imu_control) {
-	// 获取当前时间戳
-	const TickType_t current_time = xTaskGetTickCount();
-	imu_control->delta_time = (float) (current_time - imu_control->last_update_time) / (float) configTICK_RATE_HZ;
+	// 获取当前时间戳(没有使用HAL库是因为定时精度太低,这里使用了单独配置的系统定时器的API)
+	const TickType_t current_time = getRunTimeCounterValue();
+	imu_control->delta_time = (float) (current_time - imu_control->last_update_time) / (float) MODULE_TICK_RATE_HZ;
 	imu_control->last_update_time = current_time;
 
 	// 更新陀螺仪数据
@@ -85,7 +86,7 @@ void imu_data_update(imu_control_t *imu_control) {
 		//ekf姿态解算部分
 		IMU_QuaternionEKF_Update(imu_control->gyroscope[0], imu_control->gyroscope[1], imu_control->gyroscope[2],
 		                         imu_control->accelerometer[0], imu_control->accelerometer[1],
-		                         imu_control->accelerometer[2]);
+		                         imu_control->accelerometer[2], imu_control->delta_time);
 		//ekf获取姿态角度函数
 		imu_control->angle[0] = DEG_TO_RAD(Get_Roll());
 		imu_control->angle[1] = DEG_TO_RAD(Get_Pitch());

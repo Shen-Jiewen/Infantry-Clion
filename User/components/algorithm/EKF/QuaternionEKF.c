@@ -141,8 +141,11 @@ void IMU_QuaternionEKF_Reset(void) {
  * @param ax 加速度计 x 轴数据。
  * @param ay 加速度计 y 轴数据。
  * @param az 加速度计 z 轴数据。
+ * @param dt 陀螺仪解算时间间隔数据
  */
-void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, float az) {
+void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, float az, float dt) {
+    // 配置陀螺仪解算数据间隔
+    QEKF_INS.dt = dt;
     // 校正陀螺仪数据，减去偏置
     QEKF_INS.Gyro[0] = gx - QEKF_INS.GyroBias[0];
     QEKF_INS.Gyro[1] = gy - QEKF_INS.GyroBias[1];
@@ -174,7 +177,7 @@ void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, 
         QEKF_INS.Accel[2] = az;
         QEKF_INS.UpdateCount++;
     }
-    float temp_quick = 1.f / (QEKF_INS.dt + QEKF_INS.accLPFcoef);
+    const float temp_quick = 1.f / (QEKF_INS.dt + QEKF_INS.accLPFcoef);
     QEKF_INS.Accel[0] = QEKF_INS.Accel[0] * QEKF_INS.accLPFcoef * temp_quick + ax * QEKF_INS.dt * temp_quick;
     QEKF_INS.Accel[1] = QEKF_INS.Accel[1] * QEKF_INS.accLPFcoef * temp_quick + ay * QEKF_INS.dt * temp_quick;
     QEKF_INS.Accel[2] = QEKF_INS.Accel[2] * QEKF_INS.accLPFcoef * temp_quick + az * QEKF_INS.dt * temp_quick;
