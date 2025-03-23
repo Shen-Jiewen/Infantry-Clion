@@ -4,7 +4,6 @@
 #include "bsp_gpio.h"
 #include "bsp_pwm.h"
 #include "cmsis_os.h"
-#include "MahonyAHRS.h"
 #include "QuaternionEKF.h"
 
 #define SAMPLE_RATE 1000
@@ -35,10 +34,7 @@ void imu_control_init(imu_control_t *imu_control) {
 	imu_control->solves_per_second = 0;
 
 	// AHRS初始化
-	IMU_QuaternionEKF_Init(1000, 0.001f, 10000, 1, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
-	Mahony_Init(SAMPLE_RATE);
-	MahonyAHRSinit(imu_control->accelerometer[0], imu_control->accelerometer[1], imu_control->accelerometer[2], 0, 0,
-	               0);
+	IMU_QuaternionEKF_Init(10, 0.001f, 1000000,  0.9996, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
 
 	// 初始化温度PID控制器
 	const fp32 PID_params[3] = {50.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
