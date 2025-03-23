@@ -9,7 +9,6 @@
 #include "dji_6020.h"
 #include "dt7.h"
 #include "pid.h"
-#include "imu.h"
 #include "auto_shoot.h"
 
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
@@ -20,16 +19,16 @@
 #define PITCH_SPEED_PID_MAX_IOUT  20000.0f
 
 //yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_SPEED_PID_KP        8000.0f//3600
-#define YAW_SPEED_PID_KI        5.0f//20
+#define YAW_SPEED_PID_KP        25500.0f//3600
+#define YAW_SPEED_PID_KI        25.0f//20
 #define YAW_SPEED_PID_KD        0.0f
 #define YAW_SPEED_PID_MAX_OUT   30000.0f
-#define YAW_SPEED_PID_MAX_IOUT  1000.0f
+#define YAW_SPEED_PID_MAX_IOUT  20000.0f
 
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP 5.0f  //15
+#define PITCH_GYRO_ABSOLUTE_PID_KP 16.0f  //15
 #define PITCH_GYRO_ABSOLUTE_PID_KI 0.0f
-#define PITCH_GYRO_ABSOLUTE_PID_KD 0.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KD 0.3f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT 12.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT 0.0f
 
@@ -48,9 +47,9 @@
 #define PITCH_ENCODE_RELATIVE_PID_MAX_IOUT 0.0f
 
 //yaw 角度环 角度由编码器 PID参数以及 PID最大输出，积分输出
-#define YAW_ENCODE_RELATIVE_PID_KP        10.0f  //8
+#define YAW_ENCODE_RELATIVE_PID_KP        15.0f  //8
 #define YAW_ENCODE_RELATIVE_PID_KI        0.0f
-#define YAW_ENCODE_RELATIVE_PID_KD        0.0f
+#define YAW_ENCODE_RELATIVE_PID_KD        0.2f
 #define YAW_ENCODE_RELATIVE_PID_MAX_OUT   10.0f
 #define YAW_ENCODE_RELATIVE_PID_MAX_IOUT  0.0f
 
@@ -124,8 +123,8 @@ typedef struct
  */
 typedef enum
 {
-	MOTOR_FIELD_TEMPERATURE,  // 电机温度（通用字段）
-	MOTOR_FIELD_LAST_ECD      // 上一次的编码器数据（通用字段）
+	MOTOR_FIELD_TEMPERATURE,  // 电机温度
+	MOTOR_FIELD_LAST_ECD      // 上一次的编码器数据
 } motor_common_field_t;
 
 /**
