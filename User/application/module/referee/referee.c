@@ -291,10 +291,9 @@ void referee_unpack_fifo_data(unpack_data_t *referee_unpack_obj, fifo_s_t *refer
 	}
 }
 
-void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer,fp32 *current_power_limit)
+void get_chassis_power_and_buffer(fp32 *power, fp32 *current_power_limit)
 {
     *power = power_heat_data_t.chassis_power;
-    *buffer = power_heat_data_t.chassis_power_buffer;
 	*current_power_limit = game_robot_state_t.chassis_power_limit;
 }
 

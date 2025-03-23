@@ -198,7 +198,7 @@ extern void init_referee_struct_data(void);
 extern void referee_data_solve(uint8_t *frame);
 extern void referee_unpack_fifo_data(unpack_data_t *referee_unpack_obj, fifo_s_t *referee_fifo);
 
-extern void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer,fp32 *current_power_limit);
+extern void get_chassis_power_and_buffer(fp32 *power, fp32 *current_power_limit);
 
 extern uint8_t get_robot_id(void);
 extern uint8_t get_robot_level(void);
