@@ -45,7 +45,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-extern volatile uint32_t task_tick;
+extern volatile uint32_t tick_10us;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -187,7 +187,7 @@ __weak void configureTimerForRunTimeStats(void)
 
 __weak unsigned long getRunTimeCounterValue(void)
 {
-	return task_tick;
+	return tick_10us;
 }
 /* USER CODE END 1 */
 

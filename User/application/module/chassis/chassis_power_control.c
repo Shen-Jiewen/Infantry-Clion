@@ -173,7 +173,7 @@ void chassis_power_control(chassis_control_t *chassis_power_control) {
  * @param chassis_power 当前底盘功率(W)
  * @return 计算后的输入功率(W)
  */
-static float calculate_input_power(float max_power_limit, float chassis_power) {
+static float calculate_input_power(const float max_power_limit, const float chassis_power) {
     const float POWER_FILTER_GAIN = 0.3f;  /**< 功率滤波增益，控制响应速度 */
 
     // 自适应功率计算:
@@ -195,7 +195,7 @@ static float calculate_input_power(float max_power_limit, float chassis_power) {
  * @param cap_energy 电容器剩余能量百分比(0-100)
  * @return 最大可用功率(W)
  */
-static float determine_chassis_max_power(float input_power, uint8_t cap_state, float cap_energy) {
+static float determine_chassis_max_power(const float input_power, const uint8_t cap_state, const float cap_energy) {
     uint8_t energy_level = 0;  // 能量等级
 
     /* 确定能量区间
@@ -211,7 +211,7 @@ static float determine_chassis_max_power(float input_power, uint8_t cap_state, f
     /* 获取功率加成配置
      * 根据能量等级和模式(正常/暴走)选择相应的功率加成值
      */
-    float power_boost = cap_state
+    const float power_boost = cap_state
                             ? POWER_BOOST_CONFIG[energy_level].boost_mode_add  // 暴走模式加成
                             : POWER_BOOST_CONFIG[energy_level].normal_mode_add; // 正常模式加成
 
@@ -229,14 +229,13 @@ static float determine_chassis_max_power(float input_power, uint8_t cap_state, f
 static void calculate_motor_powers(const chassis_control_t *control, float *powers, float *total_power) {
     *total_power = 0.0f;  // 初始化总功率为0
 
-    // 电机功率模型常数(通过实验标定)
-    const float CONST_TERM = 4.081f;         // 常数项(W)，表示空载功耗
-    const float A = 1.23e-07f;               // 扭矩平方系数
-    const float K2 = 1.453e-07f;             // 速度平方系数
-    const float TORQUE_COEFF = 1.99688994e-6f; // 扭矩速度系数
-
     // 计算每个电机的功率
     for (uint8_t i = 0; i < 4; i++) {
+        // 电机功率模型常数(通过实验标定)
+        const float TORQUE_COEFF = 1.99688994e-6f;
+        const float K2 = 1.453e-07f;
+        const float A = 1.23e-07f;
+        const float CONST_TERM = 4.081f;
         const motor_3508_t *motor = &control->motor_chassis[i];  // 当前电机
         const pid_type_def *pid = &control->motor_speed_pid[i];  // 电机速度PID控制器
 
@@ -271,13 +270,12 @@ static void scale_motor_powers(chassis_control_t *control, const float *powers, 
     // 计算功率缩放因子
     const float scale_factor = max_power / total_power;
 
-    // 电机功率模型常数(通过实验标定)
-    const float A = 1.23e-07f;               // 扭矩平方系数
-    const float K2 = 1.453e-07f;             // 速度平方系数
-    const float TORQUE_COEFF = 1.99688994e-6f; // 扭矩速度系数
-
     // 处理每个电机
     for (uint8_t i = 0; i < 4; i++) {
+        // 电机功率模型常数(通过实验标定)
+        const float TORQUE_COEFF = 1.99688994e-6f;
+        const float K2 = 1.453e-07f;
+        const float A = 1.23e-07f;
         pid_type_def *pid = &control->motor_speed_pid[i];      // 电机速度PID控制器
         const motor_3508_t *motor = &control->motor_chassis[i]; // 当前电机
 
@@ -299,7 +297,7 @@ static void scale_motor_powers(chassis_control_t *control, const float *powers, 
         /* 求解二次方程，根据原始扭矩方向选择合适的解
          * 二次方程ax²+bx+c=0的判别式为b²-4ac
          */
-        float discriminant = b * b - 4 * A * c;
+        const float discriminant = b * b - 4 * A * c;
         if (discriminant < 0.0f) {
             pid->out = 0.0f;  // 判别式小于0，无实数解，将扭矩设为0
             continue;

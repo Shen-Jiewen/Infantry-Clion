@@ -155,36 +155,36 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 	for (int i = 0; i < 10; i++) {
 		//UI刷新10hz
 		Char_ReFresh(cap_vol_data);
-		vTaskDelay(100);
+		osDelay(100);
 		Char_ReFresh(fric_flag_data);
-		vTaskDelay(100);
+		osDelay(100);
 		Char_ReFresh(gyro_flag_data);
-		vTaskDelay(100);
+		osDelay(100);
 		Char_ReFresh(dis_auto_data);
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(2, Car_line_L, Car_line_R); //画图形
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(2, Circle_line, Circle_line_v);
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(2, vision_horizontal_line4, AT_ID_rectangle);
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(7, vision_vertical_line1, vision_vertical_line2, vision_vertical_line3, vision_vertical_line4,\
 		           vision_horizontal_line1, vision_horizontal_line2, vision_horizontal_line3);
-		vTaskDelay(100);
+		osDelay(100);
 		//弹道线
 		UI_ReFresh(5, Shoot_horizontal_line1, Shoot_horizontal_line2, Shoot_horizontal_line3, Shoot_horizontal_line4,
 		           Shoot_horizontal_line5);
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(5, Shoot_vertical_line1, Shoot_vertical_line2, Shoot_vertical_line3, Shoot_vertical_line4,
 		           Shoot_vertical_line5);
 
 		Char_ReFresh(Allow_bullet); //发弹量和追踪ID
-		vTaskDelay(100);
+		osDelay(100);
 		Char_ReFresh(Tracking_id);
-		vTaskDelay(100);
+		osDelay(100);
 
 		UI_ReFresh(1, cap_energy_percent_line);
-		vTaskDelay(100);
+		osDelay(100);
 	}
 
 	while (1) {
@@ -207,19 +207,19 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 		Char_Draw(&Tracking_id, "tra",UI_Graph_Change, 0,UI_Color_Green, 36, strlen(Tracking_id_string), 4, 966, 720,
 		          Tracking_id_string); //追踪ID
 		Char_ReFresh(Tracking_id);
-		vTaskDelay(50);
+		osDelay(50);
 
 		//显示自瞄装甲板距离
 		Char_Draw(&dis_auto_data, "dia", UI_Graph_Change, 9, UI_Color_Orange, 24, strlen(dis_auto_data_string), 4, 1300,
 		          400, dis_auto_data_string);
 		Char_ReFresh(dis_auto_data);
-		vTaskDelay(50);
+		osDelay(50);
 
 		//显示允许发弹量
 		Char_Draw(&Allow_bullet, "bul",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(Allow_bullet_string), 4,
 		          UI_POS_X(1150),UI_POS_Y(547), Allow_bullet_string); //允许发弹量
 		Char_ReFresh(Allow_bullet);
-		vTaskDelay(50);
+		osDelay(50);
 
 		//摩擦轮颜色改变
 		if (UI_data->fric_flag) {
@@ -230,7 +230,7 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 			          UI_POS_X(100), UI_POS_Y(380), fric_flag_data_string);
 		}
 		Char_ReFresh(fric_flag_data);
-		vTaskDelay(50);
+		osDelay(50);
 		//小陀螺颜色改变
 		if (UI_data->gyro_flag) {
 			Char_Draw(&gyro_flag_data, "gyr",UI_Graph_Change, 3,UI_Color_Purplish_red, 24,
@@ -240,7 +240,7 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 			          UI_POS_X(100), UI_POS_Y(460), gyro_flag_data_string);
 		}
 		Char_ReFresh(gyro_flag_data);
-		vTaskDelay(50);
+		osDelay(50);
 		//动态显示电容电量
 		if (UI_data->cap_remain_energy > 70) {
 			Char_Draw(&cap_vol_data, "cap",UI_Graph_Change, 9,UI_Color_Green, 24, strlen(cap_vol_data_string), 4,
@@ -260,9 +260,9 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 		}
 		//刷新
 		Char_ReFresh(cap_vol_data);
-		vTaskDelay(50);
+		osDelay(50);
 		UI_ReFresh(1, cap_energy_percent_line);
-		vTaskDelay(100);
+		osDelay(100);
 		//动态显示自瞄框
 		if (UI_data->tracking_ID) {
 			Line_Draw(&vision_horizontal_line1, "hl1", UI_Graph_Change, 0, UI_Color_Purplish_red, 3, 716, 735, 746,
@@ -293,9 +293,9 @@ _Noreturn void ui_task(__attribute__((unused)) void *argument) {
 		}
 		UI_ReFresh(7, vision_vertical_line1, vision_vertical_line2, vision_vertical_line3, vision_vertical_line4,\
 		           vision_horizontal_line1, vision_horizontal_line2, vision_horizontal_line3);
-		vTaskDelay(100);
+		osDelay(100);
 		UI_ReFresh(1, vision_horizontal_line4);
-		vTaskDelay(100);
+		osDelay(100);
 
 		//系统复位
 		if (get_dt7_point()->key.v & KEY_PRESSED_OFFSET_R && get_dt7_point()->key.v & KEY_PRESSED_OFFSET_CTRL) {

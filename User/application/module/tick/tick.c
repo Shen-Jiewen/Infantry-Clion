@@ -6,7 +6,7 @@
 
 extern TIM_HandleTypeDef htim24;
 
-volatile uint32_t task_tick = 0;
+volatile uint32_t tick_10us = 0;
 
 static void tick_callback(void);
 
@@ -23,5 +23,5 @@ void tick_init(void){
 
 // 定时器回调函数
 static void tick_callback(void){
-	task_tick++;
+	tick_10us++;
 }

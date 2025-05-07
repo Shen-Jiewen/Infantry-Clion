@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/18.
-//
-
 #include "cmsis_os.h"
 #include "bsp_pwm.h"
 #include "detect.h"

@@ -1,7 +1,3 @@
-//
-// Created by Rick on 2024/12/5.
-//
-
 #ifndef GIMBAL_H_
 #define GIMBAL_H_
 

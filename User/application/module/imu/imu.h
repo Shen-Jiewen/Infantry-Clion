@@ -1,6 +1,7 @@
 #ifndef IMU_H_
 #define IMU_H_
 
+#include "dm_imu_l1.h"
 #include "main.h"
 #include "struct_typedef.h"
 #include "FreeRTOS.h"
@@ -73,6 +74,8 @@ void imu_pwm_init(void);
 void imu_hardware_init(void);
 
 void imu_data_update(imu_control_t *imu_control);
+
+void dm_imu_data_update(imu_control_t *imu_control, const dm_imu_t *imu_data);
 
 void imu_temperature_control(imu_control_t *imu_control);
 

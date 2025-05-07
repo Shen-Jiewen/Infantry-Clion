@@ -19,7 +19,7 @@ static chassis_control_t chassis_control;
   * @param[in,out]  vy_channel: 垂直通道（Y轴）原始输入值，经过死区限制后的值
   * @retval         none
   */
-static void apply_rc_deadband_limit(chassis_control_t* chassis_move_rc_to_vector,
+static void apply_rc_deadband_limit(const chassis_control_t* chassis_move_rc_to_vector,
 	int16_t* vx_channel,
 	int16_t* vy_channel);
 
@@ -31,7 +31,7 @@ static void apply_rc_deadband_limit(chassis_control_t* chassis_move_rc_to_vector
   * @param[in,out]  vy_set_channel: 垂直速度通道值，根据键盘控制进行调整
   * @retval         none
   */
-static void apply_keyboard_control(chassis_control_t* chassis_move_rc_to_vector,
+static void apply_keyboard_control(const chassis_control_t* chassis_move_rc_to_vector,
 	fp32* vx_set_channel,
 	fp32* vy_set_channel);
 
@@ -147,7 +147,7 @@ void chassis_rc_to_control_vector(fp32* vx_set, fp32* vy_set, chassis_control_t*
   * @param[in,out]  vy_channel: 垂直通道（Y轴）原始输入值，经过死区限制后的值
   * @retval         none
   */
-static void apply_rc_deadband_limit(chassis_control_t* chassis_move_rc_to_vector,
+static void apply_rc_deadband_limit(const chassis_control_t* chassis_move_rc_to_vector,
 	int16_t* vx_channel,
 	int16_t* vy_channel)
 {
@@ -163,7 +163,7 @@ static void apply_rc_deadband_limit(chassis_control_t* chassis_move_rc_to_vector
   * @param[in,out]  vy_set_channel: 垂直速度通道值，根据键盘控制进行调整
   * @retval         none
   */
-static void apply_keyboard_control(chassis_control_t* chassis_move_rc_to_vector,
+static void apply_keyboard_control(const chassis_control_t* chassis_move_rc_to_vector,
 	fp32* vx_set_channel,
 	fp32* vy_set_channel)
 {
@@ -412,7 +412,7 @@ void chassis_set_control(chassis_control_t* chassis_move_control)
  * @param[out]     chassis_move_control: 底盘控制结构体指针
  * @retval         none
  */
-static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, chassis_control_t* chassis_move_control)
+static void chassis_follow_gimbal_yaw(const fp32 vx_set, const fp32 vy_set, const fp32 angle_set, chassis_control_t* chassis_move_control)
 {
 	// 旋转控制底盘速度方向，保证前进方向是云台方向
 	const fp32 sin_yaw = sinf(-chassis_move_control->chassis_yaw_motor->relative_angle);
@@ -444,19 +444,18 @@ static void chassis_follow_gimbal_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, 
  * @param[out]     chassis_move_control: 底盘控制结构体指针
  * @retval         none
  */
-static void chassis_no_follow_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, chassis_control_t* chassis_move_control)
+static void chassis_no_follow_yaw(fp32 vx_set, fp32 vy_set, const fp32 angle_set, chassis_control_t* chassis_move_control)
 {
 	// 恢复原始的速度数值
 	vx_set /= CHASSIS_VX_RC_SEN;
 	vy_set /= -CHASSIS_VY_RC_SEN;
 
 	// 计算速度向量的模长
-	fp32 mov_mag = (fp32)sqrt(vx_set * vx_set + vy_set * vy_set);
-	fp32 relative_angle;
+	const fp32 mov_mag = sqrtf(vx_set * vx_set + vy_set * vy_set);
 
 	// 计算目标相对角度
-	relative_angle =
-		calculate_relative_angle(vx_set, vy_set, mov_mag, chassis_move_control->chassis_yaw_motor->relative_angle);
+	const fp32 relative_angle = calculate_relative_angle(vx_set, vy_set, mov_mag,
+	                                               chassis_move_control->chassis_yaw_motor->relative_angle);
 
 	// 限制角度范围 [0, 2*PI]
 	loop_fp32_constrain(relative_angle, 0, 2 * PI);
@@ -483,7 +482,7 @@ static void chassis_no_follow_yaw(fp32 vx_set, fp32 vy_set, fp32 angle_set, chas
  * @param[out]     chassis_move_control: 底盘控制结构体指针
  * @retval         none
  */
-static void chassis_raw_mode(fp32 vx_set, fp32 vy_set, fp32 angle_set, chassis_control_t* chassis_move_control)
+static void chassis_raw_mode(const fp32 vx_set, const fp32 vy_set, const fp32 angle_set, chassis_control_t* chassis_move_control)
 {
 	chassis_move_control->vx_set = vx_set;
 	chassis_move_control->vy_set = vy_set;
@@ -502,7 +501,7 @@ static void chassis_raw_mode(fp32 vx_set, fp32 vy_set, fp32 angle_set, chassis_c
  * @param[in]      current_yaw: 当前云台角度
  * @retval         relative_angle: 计算后的相对角度
  */
-static fp32 calculate_relative_angle(fp32 vx_set, fp32 vy_set, fp32 mov_mag, fp32 current_yaw)
+static fp32 calculate_relative_angle(const fp32 vx_set, const fp32 vy_set, const fp32 mov_mag, const fp32 current_yaw)
 {
 	fp32 relative_angle = 0.0f;
 
@@ -538,8 +537,7 @@ static fp32 calculate_relative_angle(fp32 vx_set, fp32 vy_set, fp32 mov_mag, fp3
   */
 void chassis_control_loop(chassis_control_t* chassis_move_control_loop)
 {
-	fp32 max_vector = 0.0f, vector_rate;
-	fp32 temp;
+	fp32 max_vector = 0.0f;
 	fp32 wheel_speed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	uint8_t i = 0;
 
@@ -562,7 +560,7 @@ void chassis_control_loop(chassis_control_t* chassis_move_control_loop)
 	for (i = 0; i < 4; i++)
 	{
 		chassis_move_control_loop->motor_chassis[i].speed_set = wheel_speed[i];
-		temp = fabsf(chassis_move_control_loop->motor_chassis[i].speed_set);
+		const fp32 temp = fabsf(chassis_move_control_loop->motor_chassis[i].speed_set);
 		if (max_vector < temp)
 		{
 			max_vector = temp;
@@ -571,7 +569,7 @@ void chassis_control_loop(chassis_control_t* chassis_move_control_loop)
 
 	if (max_vector > MAX_WHEEL_SPEED)
 	{
-		vector_rate = MAX_WHEEL_SPEED / max_vector;
+		const fp32 vector_rate = MAX_WHEEL_SPEED / max_vector;
 		for (i = 0; i < 4; i++)
 		{
 			chassis_move_control_loop->motor_chassis[i].speed_set *= vector_rate;
@@ -587,7 +585,7 @@ void chassis_control_loop(chassis_control_t* chassis_move_control_loop)
 	}
 
 	// 功率控制
-	chassis_power_control(chassis_move_control_loop);
+	// chassis_power_control(chassis_move_control_loop);
 
 	//赋值电流值
 	for (i = 0; i < 4; i++)
@@ -618,7 +616,7 @@ static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set,
 	wheel_speed[3] = -vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
 }
 
-static void FDCAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+static void FDCAN_cmd_chassis(const int16_t motor1, const int16_t motor2, const int16_t motor3, const int16_t motor4)
 {
 	FDCAN_TxHeaderTypeDef txHeader;
 	uint8_t txData[8]; // 数据缓存

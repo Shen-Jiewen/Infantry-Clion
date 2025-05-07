@@ -131,6 +131,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM24_Init();
   MX_OCTOSPI2_Init();
+  MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
   MX_USB_DEVICE_Init();
   fdcan1_filter_init();
@@ -309,6 +310,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+  // 不使用HAL原生回调函数的原因是HAL库自身的回调函数会在中断中调用FreeRTOS的API
 	USER_TIM_PeriodElapsedCallback(htim);
   /* USER CODE END Callback 1 */
 }

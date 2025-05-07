@@ -34,7 +34,7 @@ void imu_control_init(imu_control_t *imu_control) {
 	imu_control->solves_per_second = 0;
 
 	// AHRS初始化
-	IMU_QuaternionEKF_Init(10, 0.001f, 1000000,  0.9996, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
+	IMU_QuaternionEKF_Init(10, 0.001f, 1000000, 0.9996f, (fp32) 1 / SAMPLE_RATE, 0); //ekf初始化
 
 	// 初始化温度PID控制器
 	const fp32 PID_params[3] = {50.0f, 0.1f, 0.0f}; // Kp, Ki, Kd
@@ -103,6 +103,18 @@ void imu_data_update(imu_control_t *imu_control) {
 			imu_control->step_status = 1;
 		}
 	}
+}
+
+void dm_imu_data_update(imu_control_t *imu_control, const dm_imu_t *imu_data) {
+	imu_control->angle[0] = imu_data->roll;
+	imu_control->angle[1] = imu_data->pitch;
+	imu_control->angle[2] = imu_data->yaw;
+	imu_control->gyroscope[0] = imu_data->gyro[0];
+	imu_control->gyroscope[1] = imu_data->gyro[1];
+	imu_control->gyroscope[2] = imu_data->gyro[2];
+	imu_control->accelerometer[0] = imu_data->accel[0];
+	imu_control->accelerometer[1] = imu_data->accel[1];
+	imu_control->accelerometer[2] = imu_data->accel[2];
 }
 
 /**

@@ -84,6 +84,7 @@ include_directories(
         User/components/device/IST8310
         User/components/device/ws2812
         User/components/device/supercap
+        User/components/device/imu
         # component/support
         User/components/support
         User/components/support/vofa+

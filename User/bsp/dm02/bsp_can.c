@@ -3,7 +3,11 @@
 //
 
 #include "bsp_can.h"
-
+#include "dji_3508.h"
+#include "dji_6020.h"
+#include "supercap.h"
+#include "dji_2006.h"
+#include "dm_imu_l1.h"
 
 extern FDCAN_HandleTypeDef hfdcan1;
 extern FDCAN_HandleTypeDef hfdcan2;
@@ -134,6 +138,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
 		if (HAL_FDCAN_GetRxMessage(&hfdcan3, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK)
 		{
 			// 处理 FDCAN3 的接收到的消息
+			CAN_DM_imu_callback(RxHeader.Identifier, RxData);
 		}
 	}
 }
